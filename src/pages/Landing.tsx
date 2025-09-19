@@ -52,6 +52,11 @@ export default function Landing() {
           variant="h3"
           component="h1"
           sx={{
+            position: 'absolute',
+            top: 10,
+            left: '270px',
+            right: '220px',
+            textAlign: 'center',
             fontWeight: 'bold',
             color: 'primary.main',
             fontSize: { xs: '2rem', md: '3rem' },
@@ -142,6 +147,29 @@ export default function Landing() {
             sx={{ width: '100%' }}
           />
         </Box>
+
+        {/* Start Studying Button */}
+        <Button
+          variant="contained"
+          size="small"
+          component={Link}
+          to="/login"
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            px: 2,
+            py: 1,
+            fontSize: '1rem',
+            borderRadius: '50px',
+            backgroundColor: 'primary.main',
+            '&:hover': {
+              backgroundColor: 'primary.dark',
+            },
+          }}
+        >
+          Comenzar a Estudiar
+        </Button>
       </Box>
 
       {/* Main Content */}
@@ -192,26 +220,6 @@ export default function Landing() {
             StudySpace es una plataforma inteligente de gestión de estudio que implementa metodologías de repaso espaciado, creación de notas inteligentes y seguimiento de progreso académico. Optimiza tus sesiones de estudio mediante algoritmos adaptativos y análisis de rendimiento personalizado.
           </Typography>
         </Box>
-
-        {/* Call to Action Button */}
-        <Button
-          variant="contained"
-          size="large"
-          component={Link}
-          to="/login"
-          sx={{
-            px: 4,
-            py: 1.5,
-            fontSize: '1.2rem',
-            borderRadius: '50px',
-            backgroundColor: 'primary.main',
-            '&:hover': {
-              backgroundColor: 'primary.dark',
-            },
-          }}
-        >
-          Comenzar a Estudiar
-        </Button>
       </Box>
 
       {/* Modal for functionality description */}
