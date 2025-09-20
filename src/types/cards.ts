@@ -24,8 +24,11 @@ export interface CardListProps {
     cards: Card[];
     onEdit: (card: Card) => void;
     onDelete: (cardId: string) => void;  // Revisar si en el backend el ID es numérico
-    topicId: string;  // Revisar si en el backend es numérico (filtrado de tarjetas por tema)
   }
+
+export interface CardsManagerProps {
+  topicId: string; // Revisar si es numérico
+}
 
 
 export type CreateCardData = Omit<Card, 'id' | 'createdAt' | 'updatedAt'>;

@@ -38,7 +38,7 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) =
     setEditingTopic(undefined);
   };
 
-  const handleViewCards = (topicId: string) => {
+  const handleViewCards = (topicId: string) => {  // Revisar si es numérico
     if (onSelectTopic) {
       onSelectTopic(topicId);
     }
