@@ -1,263 +1,370 @@
-import React, { useState } from 'react';
-import { Button, Typography, Container, Box, Autocomplete, TextField, Modal, Paper } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { functionalities, Functionality } from '../data/functionalities';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Box, Button, Typography, Paper, IconButton, Container } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { useAuth } from '../context/AuthContext';
 
-export default function Landing() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState('');
+const Landing: React.FC = () => {
+  const [showModal, setShowModal] = useState(true);
+  const [sparkles, setSparkles] = useState<Array<{id: number, left: number, top: number, size: number}>>([]);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-  const handleOpenModal = (content: string) => {
-    setModalContent(content);
-    setModalOpen(true);
+  useEffect(() => {
+    const sparkleInterval = setInterval(() => {
+      createSparkle();
+    }, 2000);
+
+    return () => clearInterval(sparkleInterval);
+  }, []);
+
+  const createSparkle = () => {
+    const newSparkle = {
+      id: Date.now(),
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: Math.random() * 20 + 15,
+    };
+
+    setSparkles(prev => [...prev, newSparkle]);
+
+    setTimeout(() => {
+      setSparkles(prev => prev.filter(sparkle => sparkle.id !== newSparkle.id));
+    }, 2000);
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setModalContent('');
+  const closeModal = () => {
+    setShowModal(false);
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
   };
 
-  return (
-    <Container maxWidth="lg" sx={{ mt: 4, px: 2, position: 'relative' }}>
+  const startExperience = () => {
+    console.log('¡Iniciando experiencia Study Space!');
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  if (!showModal) {
+    return (
       <Box
         sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundImage: 'url(https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'blur(3px)',
-          zIndex: -1,
-        }}
-      />
-      {/* Title above search bar */}
-      <Box
-        sx={{
-          textAlign: 'center',
-          mb: 2,
-          p: 2,
-          border: '1px solid',
-          borderColor: 'primary.light',
-          borderRadius: 2,
-          boxShadow: 2,
-          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           position: 'relative',
-          minHeight: 120,
+          overflow: 'hidden',
         }}
       >
-        <Typography
-          variant="h3"
-          component="h1"
-          sx={{
-            position: 'absolute',
-            top: 10,
-            left: '270px',
-            right: '220px',
-            textAlign: 'center',
-            fontWeight: 'bold',
-            color: 'primary.main',
-            fontSize: { xs: '2rem', md: '3rem' },
-          }}
-        >
-          Study Space
-        </Typography>
-
-        {/* Search Bar */}
-        <Box sx={{ position: 'absolute', top: 10, left: 10, width: 250 }}>
-          <Autocomplete
-            options={functionalities}
-            getOptionLabel={(option: Functionality) => option.title}
-            renderOption={(props, option) => {
-              const { key, ...rest } = props;
-              return (
-                <li
-                  key={key}
-                  {...rest}
-                  onClick={() => {
-                    handleOpenModal(option.description);
-                  }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                    {option.title}
-                  </Typography>
-                </li>
-              );
+        <Container maxWidth="sm">
+          <Paper
+            elevation={24}
+            sx={{
+              p: 4,
+              textAlign: 'center',
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              borderRadius: 3,
+              border: '1px solid rgba(255, 255, 255, 0.3)',
             }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Como funciona"
-                placeholder="Busca funcionalidades..."
-                variant="outlined"
-                sx={{
-                  width: '100%',
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '50px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    '& fieldset': {
-                      borderColor: 'primary.main',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'primary.dark',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'primary.main',
-                    },
-                  },
-                }}
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {params.InputProps.endAdornment}
-                      <button
-                        type="button"
-                        style={{
-                          backgroundColor: 'transparent',
-                          border: 'none',
-                          cursor: 'pointer',
-                          marginLeft: 8,
-                        }}
-                        onClick={() => {
-                          const inputValue = params.inputProps.value;
-                          if (typeof inputValue === 'string') {
-                            const found = functionalities.find(f => f.title.toLowerCase() === inputValue.toLowerCase());
-                            if (found) {
-                              handleOpenModal(found.description);
-                            } else {
-                              handleOpenModal('Funcionalidad no encontrada');
-                            }
-                          } else {
-                            handleOpenModal('Entrada inválida');
-                          }
-                        }}
-                        aria-label="Buscar funcionalidad"
-                      >
-                        🔍
-                      </button>
-                    </>
-                  ),
-                }}
-              />
-            )}
-            sx={{ width: '100%' }}
-          />
-        </Box>
+          >
+            <Typography variant="h4" component="h1" gutterBottom sx={{
+              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
+              ¡Bienvenido a Study Space!
+            </Typography>
+            <Typography variant="body1" color="text.secondary" paragraph>
+              Tu espacio personalizado de aprendizaje te está esperando.
+            </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={startExperience}
+              sx={{
+                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                mt: 2,
+                px: 4,
+                py: 1.5,
+                borderRadius: 2,
+                textTransform: 'none',
+                fontSize: '1.1rem',
+                fontWeight: 600,
+              }}
+            >
+              {isAuthenticated ? 'Ir al Dashboard' : '¡Comenzar mi experiencia!'}
+            </Button>
+          </Paper>
+        </Container>
+      </Box>
+    );
+  }
 
-        {/* Start Studying Button */}
-        <Button
-          variant="contained"
-          size="small"
-          component={Link}
-          to="/login"
+  return (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Background Elements */}
+      <Box sx={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, zIndex: 0 }}>
+        {Array.from({ length: 4 }, (_, index) => (
+          <Box
+            key={index}
+            sx={{
+              position: 'absolute',
+              borderRadius: '50%',
+              opacity: 0.1,
+              background: 'white',
+              animation: 'float 6s ease-in-out infinite',
+              width: index === 0 ? '120px' : index === 1 ? '80px' : index === 2 ? '60px' : '100px',
+              height: index === 0 ? '120px' : index === 1 ? '80px' : index === 2 ? '60px' : '100px',
+              top: index === 0 ? '10%' : index === 1 ? '20%' : index === 2 ? '20%' : '15%',
+              left: index === 0 ? '10%' : index === 1 ? '85%' : index === 2 ? '20%' : '90%',
+              right: index === 1 ? '15%' : undefined,
+              bottom: index === 2 ? '20%' : index === 3 ? '15%' : undefined,
+              animationDelay: `${index * 0.5}s`,
+              '@keyframes float': {
+                '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                '50%': { transform: 'translateY(-20px) rotate(180deg)' },
+              },
+            }}
+          />
+        ))}
+      </Box>
+
+      {/* Sparkles */}
+      {sparkles.map(sparkle => (
+        <Box
+          key={sparkle.id}
           sx={{
             position: 'absolute',
-            top: 10,
-            right: 10,
-            px: 2,
-            py: 1,
-            fontSize: '1rem',
-            borderRadius: '50px',
-            backgroundColor: 'primary.main',
-            '&:hover': {
-              backgroundColor: 'primary.dark',
+            left: `${sparkle.left}vw`,
+            top: `${sparkle.top}vh`,
+            fontSize: `${sparkle.size}px`,
+            animation: 'sparkle 2s linear infinite',
+            pointerEvents: 'none',
+            zIndex: 1,
+            '@keyframes sparkle': {
+              '0%, 100%': {
+                opacity: 0,
+                transform: 'scale(0)',
+              },
+              '50%': {
+                opacity: 1,
+                transform: 'scale(1)',
+              },
             },
           }}
         >
-          Comenzar a Estudiar
-        </Button>
-      </Box>
-
-      {/* Main Content */}
-      <Box sx={{ textAlign: 'center' }}>
-        {/* Welcome Section */}
-        <Box
-          sx={{
-            p: 3,
-            m: 2,
-            border: '1px solid',
-            borderColor: 'grey.300',
-            borderRadius: 2,
-            boxShadow: 1,
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-          }}
-        >
-          <Typography
-            variant="h4"
-            component="h2"
-            gutterBottom
-            sx={{
-              fontWeight: 'bold',
-              color: 'primary.main',
-              fontSize: { xs: '1.5rem', md: '2rem' },
-            }}
-          >
-            Bienvenido a StudySpace
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            paragraph
-            sx={{
-              mb: 4,
-              fontSize: { xs: '1rem', md: '1.2rem' },
-            }}
-          >
-            Tu plataforma inteligente de gestión de estudio con repaso espaciado
-          </Typography>
+          ✨
         </Box>
+      ))}
 
-        {/* Description Section */}
-        <Box sx={{ mb: 6, textAlign: 'left', p: 3, m: 2, border: '1px solid', borderColor: 'grey.300', borderRadius: 2, boxShadow: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-          <Typography variant="h5" component="h3" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-            ¿Qué es StudySpace?
-          </Typography>
-          <Typography variant="body1" paragraph sx={{ lineHeight: 1.6, mb: 2 }}>
-            StudySpace es una plataforma inteligente de gestión de estudio que implementa metodologías de repaso espaciado, creación de notas inteligentes y seguimiento de progreso académico. Optimiza tus sesiones de estudio mediante algoritmos adaptativos y análisis de rendimiento personalizado.
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Modal for functionality description */}
-      <Modal
-        open={modalOpen}
-        onClose={handleCloseModal}
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
+      {/* Welcome Modal */}
+      <Paper
+        elevation={24}
+        sx={{
+          p: 4,
+          maxWidth: 480,
+          width: '90%',
+          textAlign: 'center',
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: 3,
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
+          position: 'relative',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          animation: 'slideUp 0.8s ease-out',
+          zIndex: 10,
+          '@keyframes slideUp': {
+            from: {
+              opacity: 0,
+              transform: 'translateY(30px)',
+            },
+            to: {
+              opacity: 1,
+              transform: 'translateY(0)',
+            },
+          },
+        }}
       >
-        <Paper
+        <IconButton
+          onClick={closeModal}
           sx={{
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: { xs: '80%', sm: 400 },
-            bgcolor: 'rgba(255, 255, 255, 0.9)',
-            border: '1px solid',
-            borderColor: 'grey.300',
-            borderRadius: 2,
-            boxShadow: 24,
-            p: 4,
+            top: 16,
+            right: 16,
+            background: 'rgba(102, 126, 234, 0.1)',
+            '&:hover': {
+              background: 'rgba(102, 126, 234, 0.2)',
+            },
           }}
         >
-          <Typography id="modal-title" variant="h6" component="h2" gutterBottom>
-            Descripción
-          </Typography>
-          <Typography id="modal-description" sx={{ mt: 2 }}>
-            {modalContent}
-          </Typography>
-          <Box sx={{ mt: 4, textAlign: 'right' }}>
-            <Button variant="contained" onClick={handleCloseModal}>
-              Cerrar
-            </Button>
+          <CloseIcon />
+        </IconButton>
+
+        <Box sx={{ mb: 3, position: 'relative', display: 'inline-block' }}>
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              borderRadius: 2.5,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '36px',
+              mb: 1,
+              mx: 'auto',
+              animation: 'bounce 2s ease-in-out infinite',
+              '@keyframes bounce': {
+                '0%, 20%, 50%, 80%, 100%': { transform: 'translateY(0)' },
+                '40%': { transform: 'translateY(-10px)' },
+                '60%': { transform: 'translateY(-5px)' },
+              },
+            }}
+          >
+            📚
           </Box>
-        </Paper>
-      </Modal>
-    </Container>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -20,
+              right: -30,
+              fontSize: '24px',
+              animation: 'floatAround 4s ease-in-out infinite',
+              animationDelay: '0.5s',
+              '@keyframes floatAround': {
+                '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                '50%': { transform: 'translateY(-15px) rotate(10deg)' },
+              },
+            }}
+          >
+            📖
+          </Box>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -10,
+              left: -40,
+              fontSize: '20px',
+              animation: 'floatAround 4s ease-in-out infinite',
+              animationDelay: '1.5s',
+              '@keyframes floatAround': {
+                '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                '50%': { transform: 'translateY(-15px) rotate(10deg)' },
+              },
+            }}
+          >
+            ⭐
+          </Box>
+        </Box>
+
+        <Typography variant="h4" component="h1" gutterBottom sx={{
+          background: 'linear-gradient(135deg, #667eea, #764ba2)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          fontWeight: 700,
+        }}>
+          ¡Bienvenido a Study Space!
+        </Typography>
+
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+          Tu espacio personalizado de aprendizaje te está esperando.
+          Descubre una nueva forma de estudiar y alcanzar tus metas académicas.
+        </Typography>
+
+        <Box
+          sx={{
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))',
+            borderRadius: 2,
+            p: 2,
+            mb: 3,
+            border: '1px solid rgba(102, 126, 234, 0.2)',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+            <Box
+              sx={{
+                width: 24,
+                height: 24,
+                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '12px',
+                color: 'white',
+                fontWeight: 600,
+              }}
+            >
+              SS
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Study Space Team</strong> te invita a unirte:
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              background: 'rgba(102, 126, 234, 0.1)',
+              borderRadius: 1.5,
+              p: 1.5,
+              color: 'text.secondary',
+              fontStyle: 'italic',
+              borderLeft: '4px solid #667eea',
+            }}
+          >
+            "¡Hola! Estamos emocionados de tenerte aquí. Prepárate para una experiencia de estudio increíble 🎓"
+          </Box>
+        </Box>
+
+        <Button
+          variant="contained"
+          size="large"
+          onClick={startExperience}
+          sx={{
+            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+            color: 'white',
+            border: 'none',
+            px: 3,
+            py: 1.5,
+            fontSize: '1.1rem',
+            fontWeight: 600,
+            borderRadius: 2,
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
+            textTransform: 'none',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 30px rgba(102, 126, 234, 0.4)',
+            },
+          }}
+        >
+          ¡Comenzar mi experiencia! 🚀
+        </Button>
+      </Paper>
+    </Box>
   );
 };
 
+export default Landing;
