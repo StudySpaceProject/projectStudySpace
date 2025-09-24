@@ -10,7 +10,7 @@ export const useCards = () => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const fetchCardsByTopic = async (topicId: string): Promise<Card[]> => {
+  const fetchCardsByTopic = async (topicId: number): Promise<Card[]> => {
     if (!user) throw new Error('Usuario no autenticado');
     
     setLoading(true);
@@ -76,7 +76,7 @@ export const useCards = () => {
     }
   };
 
-  const updateCard = async (id: string, updates: UpdateCardData): Promise<Card> => {
+  const updateCard = async (id: number, updates: UpdateCardData): Promise<Card> => {
     setLoading(true);
     setError(null);
     try {
@@ -101,7 +101,7 @@ export const useCards = () => {
     }
   };
 
-  const deleteCard = async (id: string): Promise<void> => {
+  const deleteCard = async (id: number): Promise<void> => {
     setLoading(true);
     setError(null);
     try {

@@ -5,18 +5,22 @@ import { CardItem } from './CardItem';
 export const CardList: React.FC<CardListProps> = ({ 
   cards, 
   onEdit, 
-  onDelete 
+  onDelete,
+  topicId 
 }) => {
   if (cards.length === 0) {
     return (
       <div className="empty-state">
-        <p>No hay tarjetas creadas. Crea tu primera tarjeta para comenzar.</p>
+        <p>No hay tarjetas creadas en este tema. Crea tu primera tarjeta para comenzar.</p>
       </div>
     );
   }
 
   return (
     <div className="card-list">
+      <div className="card-list-header">
+        <h3>Tarjetas del tema ({cards.length})</h3>
+      </div>
       {cards.map(card => (
         <CardItem
           key={card.id}

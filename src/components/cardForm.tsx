@@ -9,6 +9,7 @@ export const CardForm: React.FC<CardFormProps> = ({
 }) => {
   const [question, setQuestion] = useState(initialData?.question || '');
   const [answer, setAnswer] = useState(initialData?.answer || '');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -17,12 +18,21 @@ export const CardForm: React.FC<CardFormProps> = ({
     }
   }, [initialData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (question.trim() && answer.trim()) {
-      onSubmit({ question, answer });
-      setQuestion('');
-      setAnswer('');
+      setIsSubmitting(true);
+      try {
+        await onSubmit({ question, answer });
+        if (!isEditing) {
+          setQuestion('');
+          setAnswer('');
+        }
+      } catch (error) {
+        console.error('Error al guardar tarjeta:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -36,6 +46,7 @@ export const CardForm: React.FC<CardFormProps> = ({
           onChange={e => setQuestion(e.target.value)}
           rows={3}
           required
+          disabled={isSubmitting}
         />
       </div>
       <div className="form-group">
@@ -46,13 +57,14 @@ export const CardForm: React.FC<CardFormProps> = ({
           onChange={e => setAnswer(e.target.value)}
           rows={3}
           required
+          disabled={isSubmitting}
         />
       </div>
       <div className="form-actions">
-        <button type="submit">
-          {isEditing ? 'Actualizar' : 'Crear'} Tarjeta
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear')} Tarjeta
         </button>
-        <button type="button" onClick={onCancel}>
+        <button type="button" onClick={onCancel} disabled={isSubmitting}>
           Cancelar
         </button>
       </div>

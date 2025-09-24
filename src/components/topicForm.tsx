@@ -10,6 +10,7 @@ export const TopicForm: React.FC<TopicFormProps> = ({
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [category, setCategory] = useState(initialData?.category || '');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -19,14 +20,21 @@ export const TopicForm: React.FC<TopicFormProps> = ({
     }
   }, [initialData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
-      onSubmit({ 
-        name, 
-        description: description || undefined, 
-        category: category || undefined
-      });
+      setIsSubmitting(true);
+      try {
+        await onSubmit({ 
+          name, 
+          description: description || undefined, 
+          category: category || undefined
+        });
+      } catch (error) {
+        console.error('Error al guardar tema:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -39,6 +47,7 @@ export const TopicForm: React.FC<TopicFormProps> = ({
           value={name}
           onChange={e => setName(e.target.value)}
           required
+          disabled={isSubmitting}
         />
       </div>
       
@@ -48,6 +57,7 @@ export const TopicForm: React.FC<TopicFormProps> = ({
           value={description}
           onChange={e => setDescription(e.target.value)}
           rows={3}
+          disabled={isSubmitting}
         />
       </div>
       
@@ -57,14 +67,15 @@ export const TopicForm: React.FC<TopicFormProps> = ({
           type="text"
           value={category}
           onChange={e => setCategory(e.target.value)}
+          disabled={isSubmitting}
         />
       </div>
       
       <div className="form-actions">
-        <button type="submit">
-          {isEditing ? 'Actualizar' : 'Crear'} Materia
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear')} Materia
         </button>
-        <button type="button" onClick={onCancel}>
+        <button type="button" onClick={onCancel} disabled={isSubmitting}>
           Cancelar
         </button>
       </div>

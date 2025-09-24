@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Topic } from '../types/topics';
 import { useTopics } from '../../hooks/useTopics';
 import { TopicList } from './TopicList';
 import { TopicForm } from './topicForm';
 
 interface TopicsManagerProps {
-  onSelectTopic?: (topicId: string) => void;
+  onSelectTopic?: (topicId: number) => void;
 }
 
 export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | undefined>();
-  const { topics, addTopic, updateTopic, deleteTopic } = useTopics();
+  const { topics, loading, error, fetchUserTopics, addTopic, updateTopic, deleteTopic } = useTopics();
+
+  useEffect(() => {
+    fetchUserTopics();
+  }, []);
 
   const handleCreateTopic = () => {
     setEditingTopic(undefined);
@@ -23,14 +27,32 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) =
     setShowForm(true);
   };
 
-  const handleSubmit = (topicData: { name: string; description?: string; category?: string }) => {
-    if (editingTopic) {
-      updateTopic(editingTopic.id, topicData);
-    } else {
-      addTopic(topicData);
+  const handleSubmit = async (topicData: { name: string; description?: string; category?: string }) => {
+    try {
+      if (editingTopic) {
+        await updateTopic(editingTopic.id, topicData);
+      } else {
+        await addTopic(topicData);
+      }
+      setShowForm(false);
+      setEditingTopic(undefined);
+    } catch (error) {
+      console.error('Error al guardar tema:', error);
     }
-    setShowForm(false);
-    setEditingTopic(undefined);
+  };
+
+  const handleDeleteTopic = async (topicId: number) => {
+    try {
+      await deleteTopic(topicId);
+    } catch (error) {
+      console.error('Error al eliminar tema:', error);
+    }
+  };
+
+  const handleViewCards = (topicId: number) => {
+    if (onSelectTopic) {
+      onSelectTopic(topicId);
+    }
   };
 
   const handleCancel = () => {
@@ -38,11 +60,8 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) =
     setEditingTopic(undefined);
   };
 
-  const handleViewCards = (topicId: string) => {  // Revisar si es numérico
-    if (onSelectTopic) {
-      onSelectTopic(topicId);
-    }
-  };
+  if (loading) return <div className="loading">Cargando materias...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
     <div className="topics-manager">
@@ -66,7 +85,7 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) =
         <TopicList
           topics={topics}
           onEdit={handleEditTopic}
-          onDelete={deleteTopic}
+          onDelete={handleDeleteTopic}
           onViewCards={onSelectTopic ? handleViewCards : undefined}
         />
       )}

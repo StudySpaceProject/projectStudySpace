@@ -18,6 +18,9 @@ export const TopicList: React.FC<TopicListProps> = ({
 
   return (
     <div className="topic-list">
+      <div className="topic-list-header">
+        <h3>Tus Materias ({topics.length})</h3>
+      </div>
       {topics.map(topic => (
         <TopicItem
           key={topic.id}

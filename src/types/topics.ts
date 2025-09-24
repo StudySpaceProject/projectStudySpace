@@ -1,5 +1,5 @@
 export interface Topic {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   category?: string;
@@ -10,8 +10,8 @@ export interface Topic {
 export interface TopicItemProps {
   topic: Topic;
   onEdit: (topic: Topic) => void;
-  onDelete: (topicId: string) => void;
-  onViewCards?: (topicId: string) => void;  // para navegar a las tarjetas del tema
+  onDelete: (topicId: number) => void;
+  onViewCards?: (topicId: number) => void;
 }
 
 export interface TopicFormProps {
@@ -24,8 +24,8 @@ export interface TopicFormProps {
 export interface TopicListProps {
   topics: Topic[];
   onEdit: (topic: Topic) => void;
-  onDelete: (topicId: string) => void;
-  onViewCards?: (topicId: string) => void;  // para navegar a las tarjetas del tema
+  onDelete: (topicId: number) => void;
+  onViewCards?: (topicId: number) => void;  // para navegar a las tarjetas del tema
 }
 
 export type CreateTopicData = Omit<Topic, 'id' | 'createdAt' | 'updatedAt'>;

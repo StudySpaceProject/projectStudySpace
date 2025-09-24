@@ -79,7 +79,7 @@ export const useTopics = () => {
     }
   };
 
-  const updateTopic = async (id: string, updates: UpdateTopicData): Promise<Topic> => {
+  const updateTopic = async (id: number, updates: UpdateTopicData): Promise<Topic> => {
     setLoading(true);
     setError(null);
     try {
@@ -104,7 +104,7 @@ export const useTopics = () => {
     }
   };
 
-  const deleteTopic = async (id: string): Promise<void> => {
+  const deleteTopic = async (id: number): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
@@ -123,7 +123,7 @@ export const useTopics = () => {
     }
   };
 
-  const getTopicById = async (id: string): Promise<Topic> => {
+  const getTopicById = async (id: number): Promise<Topic> => {
     setLoading(true);
     setError(null);
     try {

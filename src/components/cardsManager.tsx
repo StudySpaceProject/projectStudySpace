@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../types/cards';
 import { useCards } from '../../hooks/useCards';
 import { CardList } from './cardList';
@@ -8,9 +8,13 @@ import { CardsManagerProps } from '../types/cards';
 export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | undefined>();
-  const { cards, addCard, updateCard, deleteCard } = useCards();
+  const { cards, loading, error, fetchCardsByTopic, addCard, updateCard, deleteCard } = useCards();
 
-  const filteredCards = cards.filter(card => card.topicId === topicId);
+  useEffect(() => {
+    if (topicId) {
+      fetchCardsByTopic(topicId);
+    }
+  }, [topicId]);
 
   const handleCreateCard = () => {
     setEditingCard(undefined);
@@ -22,20 +26,35 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
     setShowForm(true);
   };
 
-  const handleSubmit = (cardData: { question: string; answer: string }) => {
-    if (editingCard) {
-      updateCard(editingCard.id, cardData);
-    } else {
-      addCard({ ...cardData, topicId });
+  const handleSubmit = async (cardData: { question: string; answer: string }) => {
+    try {
+      if (editingCard) {
+        await updateCard(editingCard.id, cardData);
+      } else {
+        await addCard({ ...cardData, topicId });
+      }
+      setShowForm(false);
+      setEditingCard(undefined);
+    } catch (error) {
+      console.error('Error al guardar tarjeta:', error);
     }
-    setShowForm(false);
-    setEditingCard(undefined);
+  };
+
+  const handleDeleteCard = async (cardId: number) => {
+    try {
+      await deleteCard(cardId);
+    } catch (error) {
+      console.error('Error al eliminar tarjeta:', error);
+    }
   };
 
   const handleCancel = () => {
     setShowForm(false);
     setEditingCard(undefined);
   };
+
+  if (loading) return <div className="loading">Cargando tarjetas...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
     <div className="cards-manager">
@@ -57,9 +76,9 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
         />
       ) : (
         <CardList
-          cards={filteredCards}
+          cards={cards}
           onEdit={handleEditCard}
-          onDelete={deleteCard}
+          onDelete={handleDeleteCard}
           topicId={topicId}
         />
       )}
