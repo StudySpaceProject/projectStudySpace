@@ -27,6 +27,10 @@ export interface CardListProps {
     topicId: string;  // Revisar si en el backend es numérico (filtrado de tarjetas por tema)
   }
 
+export interface CardsManagerProps {
+  topicId: string; // Revisar si es numérico
+}
+
 
 export type CreateCardData = Omit<Card, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateCardData = Partial<Omit<Card, 'id' | 'createdAt' | 'updatedAt'>>;

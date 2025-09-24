@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from '../types/cards';
 import { useCards } from '../../hooks/useCards';
-import { CardList } from './CardList';
+import { CardList } from './cardList';
 import { CardForm } from './CardForm';
 import { CardsManagerProps } from '../types/cards';
 
@@ -60,6 +60,7 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
           cards={filteredCards}
           onEdit={handleEditCard}
           onDelete={deleteCard}
+          topicId={topicId}
         />
       )}
     </div>
