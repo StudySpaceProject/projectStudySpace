@@ -1,41 +1,154 @@
 import { useState } from 'react';
 import { Topic, CreateTopicData, UpdateTopicData } from '../src/types/topics';
+import { useAuth } from '../src/context/AuthContext';
 
-export const useTopics = (initialTopics: Topic[] = []) => {
-  const [topics, setTopics] = useState<Topic[]>(initialTopics);
+const API_BASE_URL = 'http://localhost:3000/api';  // añadir al .env ¿?
 
-  // del backend
-  const addTopic = (topicData: CreateTopicData) => {
-    const newTopic: Topic = {
-      ...topicData,
-      id: Math.random().toString(36).substr(2, 9),  // del backend
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setTopics([...topics, newTopic]);
-    return newTopic;
+export const useTopics = () => {
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+
+  const fetchUserTopics = async (): Promise<Topic[]> => {
+    if (!user) throw new Error('Usuario no autenticado');
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/topics/user/${user.id}`);
+      if (!response.ok) throw new Error('Error al obtener temas');
+      
+      const data = await response.json();
+      setTopics(data);
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // del backend
-  const updateTopic = (id: string, updates: UpdateTopicData) => {  // revisar si ID es numérico
-    setTopics(
-      topics.map(topic =>
-        topic.id === id
-          ? { ...topic, ...updates, updatedAt: new Date() }
-          : topic
-      )
-    );
+  const searchTopics = async (searchTerm: string): Promise<Topic[]> => {
+    if (!user) throw new Error('Usuario no autenticado');
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/topics/search/${user.id}?search=${encodeURIComponent(searchTerm)}`);
+      if (!response.ok) throw new Error('Error al buscar temas');
+      
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // del backend
-  const deleteTopic = (id: string) => {  // revisar si ID es numérico
-    setTopics(topics.filter(topic => topic.id !== id));
+  const addTopic = async (topicData: CreateTopicData): Promise<Topic> => {
+    if (!user) throw new Error('Usuario no autenticado');
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/topics`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...topicData,
+          userId: user.id
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Error al crear tema');
+      
+      const newTopic = await response.json();
+      setTopics(prev => [...prev, newTopic]);
+      return newTopic;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateTopic = async (id: string, updates: UpdateTopicData): Promise<Topic> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/topics/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+      
+      if (!response.ok) throw new Error('Error al actualizar tema');
+      
+      const updatedTopic = await response.json();
+      setTopics(prev => prev.map(topic => topic.id === id ? updatedTopic : topic));
+      return updatedTopic;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteTopic = async (id: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/topics/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) throw new Error('Error al eliminar tema');
+      
+      setTopics(prev => prev.filter(topic => topic.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTopicById = async (id: string): Promise<Topic> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/topics/${id}`);
+      if (!response.ok) throw new Error('Error al obtener tema');
+      
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
     topics,
+    loading,
+    error,
+    fetchUserTopics,
+    searchTopics,
     addTopic,
     updateTopic,
     deleteTopic,
+    getTopicById,
   };
 };
