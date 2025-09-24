@@ -60,10 +60,7 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
           cards={filteredCards}
           onEdit={handleEditCard}
           onDelete={deleteCard}
-<<<<<<< HEAD
-=======
           topicId={topicId}
->>>>>>> rama-amr
         />
       )}
     </div>

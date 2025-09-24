@@ -24,6 +24,7 @@ export interface CardListProps {
     cards: Card[];
     onEdit: (card: Card) => void;
     onDelete: (cardId: string) => void;  // Revisar si en el backend el ID es numérico
+    topicId: string;  // revisar si es numérico
   }
 
 export interface CardsManagerProps {
