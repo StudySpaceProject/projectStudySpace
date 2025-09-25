@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Search, Bell, Plus, BookOpen, Calendar, TrendingUp, Users, Settings, Home, FileText, Brain, Clock } from 'lucide-react';
 import { useTopics } from '../../hooks/useTopics';
 import { useAuth } from '../context/AuthContext';
+import { TopicsManager } from '../components/topicsManager';
+import { CardsManager } from '../components/cardsManager';
 
 interface BaseTopic {
   id: number;
@@ -18,6 +20,7 @@ interface Topic extends BaseTopic {
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
 
   const { topics, loading, error, fetchUserTopics } = useTopics();
   const { user } = useAuth();
@@ -183,62 +186,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Tus Temas */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 lg:col-span-2">
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4">
-                  <h3 className="text-xl font-bold text-gray-900">Tus Temas</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button onClick={() => setActiveFilter('all')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeFilter === 'all' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                      Todos
-                    </button>
-                    <button onClick={() => setActiveFilter('easy')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeFilter === 'easy' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                      Fácil
-                    </button>
-                    <button onClick={() => setActiveFilter('medium')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeFilter === 'medium' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                      Medio
-                    </button>
-                    <button onClick={() => setActiveFilter('hard')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeFilter === 'hard' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                      Difícil
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                {loading ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-600">Cargando temas...</p>
-                  </div>
-                ) : error ? (
-                  <div className="text-center py-8">
-                    <p className="text-red-600">Error al cargar temas: {error}</p>
-                  </div>
-                ) : filteredTopics.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-600">No tienes temas aún. ¡Crea tu primer tema!</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-4">
-                    {filteredTopics.map((topic: Topic) => (
-                      <div key={topic.id} className="p-4 border border-gray-200 rounded-xl transition-all duration-200 hover:shadow-lg hover:border-gray-300 cursor-pointer">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3">
-                          <h4 className="font-semibold text-gray-900 text-lg">{topic.name}</h4>
-                          <span className={`px-2 py-1 text-xs font-medium rounded-lg border mt-2 sm:mt-0 ${getDifficultyColor(topic.difficulty)}`}>
-                            {topic.difficulty === 'easy' ? 'Fácil' : topic.difficulty === 'medium' ? 'Medio' : 'Difícil'}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
-                          <span>{topic.cards} tarjetas</span>
-                          <span>•</span>
-                          <span>Estudiado hace {topic.lastStudied}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden mb-2">
-                          <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full" style={{ width: `${topic.progress}%` }}></div>
-                        </div>
-                        <p className="text-xs text-gray-600">{topic.progress}% completado</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <TopicsManager onSelectTopic={setSelectedTopicId} />
             </div>
 
             {/* Sidebar Right */}
@@ -283,6 +231,13 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* Cards Manager - Show when a topic is selected */}
+          {selectedTopicId && (
+            <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <CardsManager topicId={selectedTopicId} />
+            </div>
+          )}
         </main>
       </div>
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Topic } from '../types/topics';
 import { useTopics } from '../../hooks/useTopics';
-import { TopicList } from './TopicList';
+import { TopicList } from './topicList';
 import { TopicForm } from './topicForm';
 
 interface TopicsManagerProps {
@@ -60,15 +60,15 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) =
     setEditingTopic(undefined);
   };
 
-  if (loading) return <div className="loading">Cargando materias...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (loading) return <div className="text-center py-8 text-gray-600">Cargando materias...</div>;
+  if (error) return <div className="text-center py-8 text-red-600">Error: {error}</div>;
 
   return (
-    <div className="topics-manager">
-      <div className="topics-header">
-        <h2>Materias de Estudio</h2>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 p-4 rounded-lg shadow-lg">
+        <h2 className="text-xl font-bold text-white">Materias de Estudio</h2>
         {!showForm && (
-          <button onClick={handleCreateTopic} className="btn-primary">
+          <button onClick={handleCreateTopic} className="bg-white hover:bg-gray-100 text-purple-600 font-medium py-2 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg">
             + Nueva Materia
           </button>
         )}
