@@ -25,35 +25,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const isAuthenticated = !!user;
 
+  // Login usando el backend
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock login
-    if (email === 'test@test.com' && password === '123') {
-      setUser({ id: '1', email, name: 'test@test.com' });
+    try {
+      const res = await fetch('http://localhost:4000/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) return false;
+
+      const data = await res.json();
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
       return true;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
-    return false;
   };
 
+  // Register usando el backend
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    // Mock register - in a real app, this would make an API call
-    // For demo purposes, we'll simulate successful registration
-    // In a real implementation, you'd check if user already exists, hash password, etc.
-    const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    const userExists = existingUsers.some((user: any) => user.email === email);
+    try {
+      const res = await fetch('http://localhost:4000/api/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (userExists) {
-      return false; // User already exists
+      if (!res.ok) return false;
+
+      const data = await res.json();
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
-
-    // Add new user to "database"
-    const newUser = { id: Date.now().toString(), name, email, password };
-    existingUsers.push(newUser);
-    localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
-
-    return true;
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     setUser(null);
   };
 
