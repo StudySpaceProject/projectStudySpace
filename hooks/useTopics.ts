@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Topic, CreateTopicData, UpdateTopicData } from '../src/types/topics';
 import { useAuth } from '../src/context/AuthContext';
 
-const API_BASE_URL = 'http://localhost:4000/api';
+// Usando variable de entorno para producción o desarrollo
+const API_BASE_URL = process.env.API_URL || 'http://localhost:4000/api';
 
 export const useTopics = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -10,7 +11,11 @@ export const useTopics = () => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const getToken = () => localStorage.getItem('token');
+  const getToken = () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No se encontró token. Por favor inicia sesión.');
+    return token;
+  };
 
   const fetchUserTopics = async (): Promise<Topic[]> => {
     if (!user) throw new Error('Usuario no autenticado');
@@ -23,22 +28,25 @@ export const useTopics = () => {
         headers: { 'Authorization': `Bearer ${token}` },
       });
 
-      if (!response.ok) throw new Error('Error al obtener temas');
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(`Error al obtener temas: ${msg}`);
+      }
 
-      const data = await response.json(); // { topics: [...] }
+      const data = await response.json();
       setTopics(data.topics || []);
       return data.topics || [];
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      throw err;
+    } catch (err: any) {
+      setError(err.message || 'Error desconocido');
+      return [];
     } finally {
       setLoading(false);
     }
   };
 
-  const addTopic = async (topicData: CreateTopicData): Promise<Topic> => {
+  const addTopic = async (topicData: CreateTopicData): Promise<Topic | null> => {
     if (!user) throw new Error('Usuario no autenticado');
-    
+
     setLoading(true);
     setError(null);
     try {
@@ -52,21 +60,24 @@ export const useTopics = () => {
         body: JSON.stringify(topicData),
       });
 
-      if (!response.ok) throw new Error('Error al crear tema');
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(`Error al crear tema: ${msg}`);
+      }
 
       const data = await response.json();
       const newTopic: Topic = data.topic;
       setTopics(prev => [...prev, newTopic]);
       return newTopic;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      throw err;
+    } catch (err: any) {
+      setError(err.message || 'Error desconocido');
+      return null;
     } finally {
       setLoading(false);
     }
   };
 
-  const updateTopic = async (id: number, updates: UpdateTopicData): Promise<Topic> => {
+  const updateTopic = async (id: number, updates: UpdateTopicData): Promise<Topic | null> => {
     setLoading(true);
     setError(null);
     try {
@@ -80,21 +91,24 @@ export const useTopics = () => {
         body: JSON.stringify(updates),
       });
 
-      if (!response.ok) throw new Error('Error al actualizar tema');
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(`Error al actualizar tema: ${msg}`);
+      }
 
       const data = await response.json();
       const updatedTopic: Topic = data.topic;
       setTopics(prev => prev.map(topic => topic.id === id ? updatedTopic : topic));
       return updatedTopic;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      throw err;
+    } catch (err: any) {
+      setError(err.message || 'Error desconocido');
+      return null;
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteTopic = async (id: number): Promise<void> => {
+  const deleteTopic = async (id: number): Promise<boolean> => {
     setLoading(true);
     setError(null);
     try {
@@ -104,18 +118,22 @@ export const useTopics = () => {
         headers: { 'Authorization': `Bearer ${token}` },
       });
 
-      if (!response.ok) throw new Error('Error al eliminar tema');
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(`Error al eliminar tema: ${msg}`);
+      }
 
       setTopics(prev => prev.filter(topic => topic.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      throw err;
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Error desconocido');
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const getTopicById = async (id: number): Promise<Topic> => {
+  const getTopicById = async (id: number): Promise<Topic | null> => {
     setLoading(true);
     setError(null);
     try {
@@ -124,13 +142,16 @@ export const useTopics = () => {
         headers: { 'Authorization': `Bearer ${token}` },
       });
 
-      if (!response.ok) throw new Error('Error al obtener tema');
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(`Error al obtener tema: ${msg}`);
+      }
 
       const data = await response.json();
-      return data.topic;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      throw err;
+      return data.topic || null;
+    } catch (err: any) {
+      setError(err.message || 'Error desconocido');
+      return null;
     } finally {
       setLoading(false);
     }
