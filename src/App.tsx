@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
-import Register from './pages/register';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 
 const theme = createTheme({

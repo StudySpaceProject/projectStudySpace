@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { User } from '../types';
+import { API_URL } from '../config';
 
 interface AuthContextType {
   user: User | null;
@@ -26,10 +27,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const isAuthenticated = !!user;
 
-  // Login usando el backend
+  const getToken = (): string => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No se encontró token. Inicia sesión.');
+    return token;
+  };
+
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const res = await fetch('http://localhost:4000/api/users/login', {
+      const res = await fetch(`${API_URL}/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -47,13 +53,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Register usando el backend
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     try {
-      const res = await fetch('http://localhost:4000/api/users/register', {
+      const res = await fetch(`${API_URL}/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       if (!res.ok) return false;
@@ -68,36 +73,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-const getDashboard = async (): Promise<any> => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
+  const getDashboard = async (): Promise<any> => {
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_URL}/users/dashboard`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-    const res = await fetch('http://localhost:4000/api/users/dashboard', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // Token guardado al login/register
-      },
-    });
+      if (!res.ok) return null;
 
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    return data.dashboard;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+      const data = await res.json();
+      return data.dashboard;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
   };
 
-
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout, getDashboard }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated, login, register, logout, getDashboard }}
+    >
       {children}
     </AuthContext.Provider>
   );
