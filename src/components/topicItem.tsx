@@ -53,7 +53,6 @@ export const TopicItem: React.FC<TopicItemProps> = ({
 
         <div className="flex justify-between text-sm text-gray-500 mt-3 border-t pt-2">
           <small>Creado: {new Date(topic.createdAt).toLocaleDateString()}</small>
-          <small>Actualizado: {new Date(topic.updatedAt).toLocaleDateString()}</small>
         </div>
       </div>
 
