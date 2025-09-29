@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Topic } from '../types/topics';
+import { Topic, CreateTopicData, UpdateTopicData } from '../types/topics';
 import { useTopics } from '../../hooks/useTopics';
 import { TopicList } from './topicList';
 import { TopicForm } from './topicForm';
 
 interface TopicsManagerProps {
   onSelectTopic?: (topicId: number) => void;
+  onTopicsChange?: (topics: Topic[]) => void; // actualizar Dashboard
 }
 
-export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) => {
+export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic, onTopicsChange }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | undefined>();
   const { topics, loading, error, fetchUserTopics, addTopic, updateTopic, deleteTopic } = useTopics();
 
   useEffect(() => {
-    fetchUserTopics();
+    fetchUserTopics().then(fetched => {
+      if (onTopicsChange) onTopicsChange(fetched);
+    });
   }, []);
 
   const handleCreateTopic = () => {
@@ -27,12 +30,18 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) =
     setShowForm(true);
   };
 
-  const handleSubmit = async (topicData: { name: string; description?: string; category?: string }) => {
+  const handleSubmit = async (topicData: CreateTopicData | UpdateTopicData) => {
     try {
       if (editingTopic) {
-        await updateTopic(editingTopic.id, topicData);
+        const updatedTopic = await updateTopic(editingTopic.id, topicData as UpdateTopicData);
+        if (onTopicsChange) {
+          onTopicsChange(topics.map(t => t.id === updatedTopic.id ? updatedTopic : t));
+        }
       } else {
-        await addTopic(topicData);
+        const newTopic = await addTopic(topicData as CreateTopicData);
+        if (onTopicsChange) {
+          onTopicsChange([...topics, newTopic]);
+        }
       }
       setShowForm(false);
       setEditingTopic(undefined);
@@ -44,15 +53,16 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) =
   const handleDeleteTopic = async (topicId: number) => {
     try {
       await deleteTopic(topicId);
+      if (onTopicsChange) {
+        onTopicsChange(topics.filter(t => t.id !== topicId));
+      }
     } catch (error) {
       console.error('Error al eliminar tema:', error);
     }
   };
 
   const handleViewCards = (topicId: number) => {
-    if (onSelectTopic) {
-      onSelectTopic(topicId);
-    }
+    onSelectTopic?.(topicId);
   };
 
   const handleCancel = () => {
@@ -68,7 +78,10 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({ onSelectTopic }) =
       <div className="flex justify-between items-center mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 p-4 rounded-lg shadow-lg">
         <h2 className="text-xl font-bold text-white">Materias de Estudio</h2>
         {!showForm && (
-          <button onClick={handleCreateTopic} className="bg-white hover:bg-gray-100 text-purple-600 font-medium py-2 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg">
+          <button
+            onClick={handleCreateTopic}
+            className="bg-white hover:bg-gray-100 text-purple-600 font-medium py-2 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg"
+          >
             + Nueva Materia
           </button>
         )}

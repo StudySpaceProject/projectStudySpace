@@ -1,10 +1,12 @@
 export interface Topic {
   id: number;
   name: string;
-  description?: string;
-  category?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  cards: number;
+  lastStudied: string;
+  difficulty: "easy" | "medium" | "hard";
+  progress: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TopicItemProps {
