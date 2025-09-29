@@ -16253,7 +16253,7 @@ $RefreshReg$(_c1, "App");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","react-router-dom":"61z4w","@mui/material/styles":"7eExx","@mui/material/CssBaseline":"knfQz","./context/AuthContext":"3zDyC","./pages/Landing":"aj97A","./pages/Login":"coNDf","./pages/register":"1ImR9","./pages/Dashboard":"gbtep","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"61z4w":[function(require,module,exports,__globalThis) {
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","react-router-dom":"61z4w","@mui/material/styles":"7eExx","@mui/material/CssBaseline":"knfQz","./context/AuthContext":"3zDyC","./pages/Landing":"aj97A","./pages/Login":"coNDf","./pages/Dashboard":"gbtep","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","./pages/register":"1ImR9"}],"61z4w":[function(require,module,exports,__globalThis) {
 /**
  * React Router DOM v6.4.0
  *
@@ -34882,37 +34882,72 @@ const AuthProvider = ({ children })=>{
     _s1();
     const [user, setUser] = (0, _react.useState)(null);
     const isAuthenticated = !!user;
+    // Login usando el backend
     const login = async (email, password)=>{
-        // Mock login
-        if (email === 'test@test.com' && password === '123') {
-            setUser({
-                id: '1',
-                email,
-                name: 'test@test.com'
+        try {
+            const res = await fetch('http://localhost:4000/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
             });
+            if (!res.ok) return false;
+            const data = await res.json();
+            setUser(data.user);
+            localStorage.setItem('token', data.token);
             return true;
+        } catch (error) {
+            console.error(error);
+            return false;
         }
-        return false;
     };
+    // Register usando el backend
     const register = async (name, email, password)=>{
-        // Mock register - in a real app, this would make an API call
-        // For demo purposes, we'll simulate successful registration
-        // In a real implementation, you'd check if user already exists, hash password, etc.
-        const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        const userExists = existingUsers.some((user)=>user.email === email);
-        if (userExists) return false; // User already exists
-        // Add new user to "database"
-        const newUser = {
-            id: Date.now().toString(),
-            name,
-            email,
-            password
-        };
-        existingUsers.push(newUser);
-        localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
-        return true;
+        try {
+            const res = await fetch('http://localhost:4000/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            });
+            if (!res.ok) return false;
+            const data = await res.json();
+            setUser(data.user);
+            localStorage.setItem('token', data.token);
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    };
+    const getDashboard = async ()=>{
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return null;
+            const res = await fetch('http://localhost:4000/api/users/dashboard', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!res.ok) return null;
+            const data = await res.json();
+            return data.dashboard;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     };
     const logout = ()=>{
+        localStorage.removeItem('token');
         setUser(null);
     };
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(AuthContext.Provider, {
@@ -34921,12 +34956,13 @@ const AuthProvider = ({ children })=>{
             isAuthenticated,
             login,
             register,
-            logout
+            logout,
+            getDashboard
         },
         children: children
     }, void 0, false, {
         fileName: "src/context/AuthContext.tsx",
-        lineNumber: 61,
+        lineNumber: 100,
         columnNumber: 5
     }, undefined);
 };
@@ -34940,7 +34976,7 @@ $RefreshReg$(_c, "AuthProvider");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"7h6Pi":[function(require,module,exports,__globalThis) {
+},{"react/jsx-dev-runtime":"dVPUn","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","react":"jMk1U"}],"7h6Pi":[function(require,module,exports,__globalThis) {
 "use strict";
 var Refresh = require("7422ead32dcc1e6b");
 function debounce(func, delay) {
@@ -96696,214 +96732,7 @@ $RefreshReg$(_c, "Login");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@mui/material":"3KIXa","react-router-dom":"61z4w","../context/AuthContext":"3zDyC","./Login.css":"4Cijz","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"4Cijz":[function() {},{}],"1ImR9":[function(require,module,exports,__globalThis) {
-var $parcel$ReactRefreshHelpers$6f64 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
-$parcel$ReactRefreshHelpers$6f64.init();
-var prevRefreshReg = globalThis.$RefreshReg$;
-var prevRefreshSig = globalThis.$RefreshSig$;
-$parcel$ReactRefreshHelpers$6f64.prelude(module);
-
-try {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _jsxDevRuntime = require("react/jsx-dev-runtime");
-var _react = require("react");
-var _reactDefault = parcelHelpers.interopDefault(_react);
-var _material = require("@mui/material");
-var _reactRouterDom = require("react-router-dom");
-var _authContext = require("../context/AuthContext");
-var _registerCss = require("./Register.css");
-var _s = $RefreshSig$();
-const Register = ()=>{
-    _s();
-    const [name, setName] = (0, _react.useState)('');
-    const [email, setEmail] = (0, _react.useState)('');
-    const [password, setPassword] = (0, _react.useState)('');
-    const [confirmPassword, setConfirmPassword] = (0, _react.useState)('');
-    const [error, setError] = (0, _react.useState)('');
-    const [success, setSuccess] = (0, _react.useState)('');
-    const { register } = (0, _authContext.useAuth)();
-    const navigate = (0, _reactRouterDom.useNavigate)();
-    const handleSubmit = async (e)=>{
-        e.preventDefault();
-        setError('');
-        setSuccess('');
-        if (password !== confirmPassword) {
-            setError("Las contrase\xf1as no coinciden");
-            return;
-        }
-        if (password.length < 6) {
-            setError("La contrase\xf1a debe tener al menos 6 caracteres");
-            return;
-        }
-        const success = await register(name, email, password);
-        if (success) {
-            setSuccess('Cuenta creada exitosamente. Redirigiendo al login...');
-            setTimeout(()=>navigate('/login'), 2000);
-        } else setError('Error al crear la cuenta. El email ya puede estar registrado.');
-    };
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: "register-container",
-        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-            className: "login-form-container",
-            children: [
-                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Typography), {
-                    className: "welcome-message",
-                    component: "h1",
-                    gutterBottom: true,
-                    children: "Crear Cuenta"
-                }, void 0, false, {
-                    fileName: "src/pages/register.tsx",
-                    lineNumber: 44,
-                    columnNumber: 9
-                }, undefined),
-                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Typography), {
-                    className: "subtitle",
-                    gutterBottom: true,
-                    children: "Reg\xedstrate para acceder a tu cuenta"
-                }, void 0, false, {
-                    fileName: "src/pages/register.tsx",
-                    lineNumber: 47,
-                    columnNumber: 9
-                }, undefined),
-                error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Alert), {
-                    className: "error-alert",
-                    severity: "error",
-                    children: error
-                }, void 0, false, {
-                    fileName: "src/pages/register.tsx",
-                    lineNumber: 51,
-                    columnNumber: 19
-                }, undefined),
-                success && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Alert), {
-                    className: "error-alert",
-                    severity: "success",
-                    children: success
-                }, void 0, false, {
-                    fileName: "src/pages/register.tsx",
-                    lineNumber: 52,
-                    columnNumber: 21
-                }, undefined),
-                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("form", {
-                    onSubmit: handleSubmit,
-                    className: "login-form",
-                    children: [
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.TextField), {
-                            fullWidth: true,
-                            label: "Nombre completo",
-                            value: name,
-                            onChange: (e)=>setName(e.target.value),
-                            required: true,
-                            variant: "outlined"
-                        }, void 0, false, {
-                            fileName: "src/pages/register.tsx",
-                            lineNumber: 55,
-                            columnNumber: 11
-                        }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.TextField), {
-                            fullWidth: true,
-                            label: "Email",
-                            type: "email",
-                            value: email,
-                            onChange: (e)=>setEmail(e.target.value),
-                            required: true,
-                            variant: "outlined"
-                        }, void 0, false, {
-                            fileName: "src/pages/register.tsx",
-                            lineNumber: 63,
-                            columnNumber: 11
-                        }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.TextField), {
-                            fullWidth: true,
-                            label: "Contrase\xf1a",
-                            type: "password",
-                            value: password,
-                            onChange: (e)=>setPassword(e.target.value),
-                            required: true,
-                            variant: "outlined"
-                        }, void 0, false, {
-                            fileName: "src/pages/register.tsx",
-                            lineNumber: 72,
-                            columnNumber: 11
-                        }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.TextField), {
-                            fullWidth: true,
-                            label: "Confirmar contrase\xf1a",
-                            type: "password",
-                            value: confirmPassword,
-                            onChange: (e)=>setConfirmPassword(e.target.value),
-                            required: true,
-                            variant: "outlined"
-                        }, void 0, false, {
-                            fileName: "src/pages/register.tsx",
-                            lineNumber: 81,
-                            columnNumber: 11
-                        }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Button), {
-                            type: "submit",
-                            fullWidth: true,
-                            className: "MuiButton-root",
-                            children: "Crear Cuenta"
-                        }, void 0, false, {
-                            fileName: "src/pages/register.tsx",
-                            lineNumber: 90,
-                            columnNumber: 11
-                        }, undefined)
-                    ]
-                }, void 0, true, {
-                    fileName: "src/pages/register.tsx",
-                    lineNumber: 54,
-                    columnNumber: 9
-                }, undefined),
-                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Typography), {
-                    className: "test-credentials",
-                    children: [
-                        "\xbfYa tienes cuenta?",
-                        ' ',
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactRouterDom.Link), {
-                            to: "/login",
-                            className: "text-blue-500 hover:text-blue-700 font-medium",
-                            children: "Inicia sesi\xf3n"
-                        }, void 0, false, {
-                            fileName: "src/pages/register.tsx",
-                            lineNumber: 97,
-                            columnNumber: 11
-                        }, undefined)
-                    ]
-                }, void 0, true, {
-                    fileName: "src/pages/register.tsx",
-                    lineNumber: 95,
-                    columnNumber: 9
-                }, undefined)
-            ]
-        }, void 0, true, {
-            fileName: "src/pages/register.tsx",
-            lineNumber: 43,
-            columnNumber: 7
-        }, undefined)
-    }, void 0, false, {
-        fileName: "src/pages/register.tsx",
-        lineNumber: 42,
-        columnNumber: 5
-    }, undefined);
-};
-_s(Register, "ClwBARGqibU5ivrF17jgBYc9CdM=", false, function() {
-    return [
-        (0, _authContext.useAuth),
-        (0, _reactRouterDom.useNavigate)
-    ];
-});
-_c = Register;
-exports.default = Register;
-var _c;
-$RefreshReg$(_c, "Register");
-
-  $parcel$ReactRefreshHelpers$6f64.postlude(module);
-} finally {
-  globalThis.$RefreshReg$ = prevRefreshReg;
-  globalThis.$RefreshSig$ = prevRefreshSig;
-}
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@mui/material":"3KIXa","react-router-dom":"61z4w","../context/AuthContext":"3zDyC","./Register.css":"38xH8","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"38xH8":[function() {},{}],"gbtep":[function(require,module,exports,__globalThis) {
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@mui/material":"3KIXa","react-router-dom":"61z4w","../context/AuthContext":"3zDyC","./Login.css":"4Cijz","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"4Cijz":[function() {},{}],"gbtep":[function(require,module,exports,__globalThis) {
 var $parcel$ReactRefreshHelpers$8cf7 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 $parcel$ReactRefreshHelpers$8cf7.init();
 var prevRefreshReg = globalThis.$RefreshReg$;
@@ -96917,7 +96746,6 @@ var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
 var _reactDefault = parcelHelpers.interopDefault(_react);
 var _lucideReact = require("lucide-react");
-var _useTopics = require("../../hooks/useTopics");
 var _authContext = require("../context/AuthContext");
 var _topicsManager = require("../components/topicsManager");
 var _cardsManager = require("../components/cardsManager");
@@ -96927,47 +96755,30 @@ const Dashboard = ()=>{
     const [searchQuery, setSearchQuery] = (0, _react.useState)('');
     const [activeFilter, setActiveFilter] = (0, _react.useState)('all');
     const [selectedTopicId, setSelectedTopicId] = (0, _react.useState)(null);
-    const { topics, loading, error, fetchUserTopics } = (0, _useTopics.useTopics)();
-    const { user } = (0, _authContext.useAuth)();
+    const [dashboardData, setDashboardData] = (0, _react.useState)(null);
+    const { getDashboard } = (0, _authContext.useAuth)();
     (0, _react.useEffect)(()=>{
-        fetchUserTopics();
+        const fetchDashboard = async ()=>{
+            const data = await getDashboard();
+            setDashboardData(data);
+        };
+        fetchDashboard();
     }, []);
-    // Map topics to include mock data for display
-    const studyTopics = topics.map((topic)=>({
-            ...topic,
-            cards: Math.floor(Math.random() * 50) + 10,
-            lastStudied: [
-                '2 horas',
-                "1 d\xeda",
-                '3 horas',
-                '1 semana',
-                "2 d\xedas",
-                '5 horas'
-            ][Math.floor(Math.random() * 6)],
-            difficulty: [
-                'easy',
-                'medium',
-                'hard'
-            ][Math.floor(Math.random() * 3)],
-            progress: Math.floor(Math.random() * 100) + 1
-        }));
-    const todaysSessions = [
-        {
-            topic: "Matem\xe1ticas Avanzadas",
-            cards: 15,
-            type: 'review'
-        },
-        {
-            topic: "Qu\xedmica Org\xe1nica",
-            cards: 8,
-            type: 'new'
-        },
-        {
-            topic: 'Historia Universal',
-            cards: 12,
-            type: 'review'
-        }
-    ];
+    // Map topics from backend pendingReviews
+    const studyTopics = dashboardData?.pendingReviews?.map((topic)=>({
+            id: topic.id,
+            name: topic.name || 'Sin nombre',
+            cards: topic.cardsCount || 0,
+            lastStudied: topic.lastStudied || 'Nunca',
+            difficulty: topic.difficulty || 'medium',
+            progress: topic.progress || 0
+        })) || [];
+    // Para sesiones de hoy, podemos usar recentActivity o mock si no existe
+    const todaysSessions = dashboardData?.recentActivity?.map((item)=>({
+            topic: item.name || 'Tema desconocido',
+            cards: item.cardsCount || 0,
+            type: item.type || 'review'
+        })) || [];
     const filteredTopics = studyTopics.filter((topic)=>topic.name.toLowerCase().includes(searchQuery.toLowerCase()) && (activeFilter === 'all' || topic.difficulty === activeFilter));
     const getDifficultyColor = (difficulty)=>{
         switch(difficulty){
@@ -96997,12 +96808,12 @@ const Dashboard = ()=>{
                                     className: "text-white"
                                 }, void 0, false, {
                                     fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 67,
+                                    lineNumber: 69,
                                     columnNumber: 13
                                 }, undefined)
                             }, void 0, false, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 66,
+                                lineNumber: 68,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h1", {
@@ -97010,13 +96821,13 @@ const Dashboard = ()=>{
                                 children: "Study Space"
                             }, void 0, false, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 69,
+                                lineNumber: 71,
                                 columnNumber: 11
                             }, undefined)
                         ]
                     }, void 0, true, {
                         fileName: "src/pages/Dashboard.tsx",
-                        lineNumber: 65,
+                        lineNumber: 67,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("nav", {
@@ -97030,14 +96841,14 @@ const Dashboard = ()=>{
                                         size: 20
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 75,
+                                        lineNumber: 77,
                                         columnNumber: 13
                                     }, undefined),
                                     "Dashboard"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 74,
+                                lineNumber: 76,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
@@ -97048,14 +96859,14 @@ const Dashboard = ()=>{
                                         size: 20
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 79,
+                                        lineNumber: 81,
                                         columnNumber: 13
                                     }, undefined),
                                     "Mis Temas"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 78,
+                                lineNumber: 80,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
@@ -97066,14 +96877,14 @@ const Dashboard = ()=>{
                                         size: 20
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 83,
+                                        lineNumber: 85,
                                         columnNumber: 13
                                     }, undefined),
                                     "Tarjetas"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 82,
+                                lineNumber: 84,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
@@ -97084,14 +96895,14 @@ const Dashboard = ()=>{
                                         size: 20
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 87,
+                                        lineNumber: 89,
                                         columnNumber: 13
                                     }, undefined),
                                     "Calendario"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 86,
+                                lineNumber: 88,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
@@ -97102,14 +96913,14 @@ const Dashboard = ()=>{
                                         size: 20
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 91,
+                                        lineNumber: 93,
                                         columnNumber: 13
                                     }, undefined),
                                     "Progreso"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 90,
+                                lineNumber: 92,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
@@ -97120,14 +96931,14 @@ const Dashboard = ()=>{
                                         size: 20
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 95,
+                                        lineNumber: 97,
                                         columnNumber: 13
                                     }, undefined),
                                     "Comunidad"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 94,
+                                lineNumber: 96,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
@@ -97138,26 +96949,26 @@ const Dashboard = ()=>{
                                         size: 20
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 99,
+                                        lineNumber: 101,
                                         columnNumber: 13
                                     }, undefined),
                                     "Configuraci\xf3n"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 98,
+                                lineNumber: 100,
                                 columnNumber: 11
                             }, undefined)
                         ]
                     }, void 0, true, {
                         fileName: "src/pages/Dashboard.tsx",
-                        lineNumber: 73,
+                        lineNumber: 75,
                         columnNumber: 9
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/pages/Dashboard.tsx",
-                lineNumber: 64,
+                lineNumber: 66,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97171,10 +96982,14 @@ const Dashboard = ()=>{
                                 children: [
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
                                         className: "text-lg font-bold text-gray-900 mb-2 lg:text-2xl",
-                                        children: "\xa1Bienvenido de vuelta, Estudiante! \uD83D\uDC4B"
-                                    }, void 0, false, {
+                                        children: [
+                                            "\xa1Bienvenido de vuelta, ",
+                                            dashboardData?.user?.email || 'Estudiante',
+                                            "! \uD83D\uDC4B"
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 110,
+                                        lineNumber: 111,
                                         columnNumber: 13
                                     }, undefined),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97185,7 +97000,7 @@ const Dashboard = ()=>{
                                                 className: "absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                                             }, void 0, false, {
                                                 fileName: "src/pages/Dashboard.tsx",
-                                                lineNumber: 114,
+                                                lineNumber: 115,
                                                 columnNumber: 15
                                             }, undefined),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
@@ -97196,19 +97011,19 @@ const Dashboard = ()=>{
                                                 onChange: (e)=>setSearchQuery(e.target.value)
                                             }, void 0, false, {
                                                 fileName: "src/pages/Dashboard.tsx",
-                                                lineNumber: 115,
+                                                lineNumber: 116,
                                                 columnNumber: 15
                                             }, undefined)
                                         ]
                                     }, void 0, true, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 113,
+                                        lineNumber: 114,
                                         columnNumber: 13
                                     }, undefined)
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 109,
+                                lineNumber: 110,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97221,20 +97036,20 @@ const Dashboard = ()=>{
                                                 size: 24
                                             }, void 0, false, {
                                                 fileName: "src/pages/Dashboard.tsx",
-                                                lineNumber: 126,
+                                                lineNumber: 127,
                                                 columnNumber: 15
                                             }, undefined),
                                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                                                 className: "absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"
                                             }, void 0, false, {
                                                 fileName: "src/pages/Dashboard.tsx",
-                                                lineNumber: 127,
+                                                lineNumber: 128,
                                                 columnNumber: 15
                                             }, undefined)
                                         ]
                                     }, void 0, true, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 125,
+                                        lineNumber: 126,
                                         columnNumber: 13
                                     }, undefined),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -97244,26 +97059,26 @@ const Dashboard = ()=>{
                                                 size: 16
                                             }, void 0, false, {
                                                 fileName: "src/pages/Dashboard.tsx",
-                                                lineNumber: 130,
+                                                lineNumber: 131,
                                                 columnNumber: 15
                                             }, undefined),
                                             "Nuevo Tema"
                                         ]
                                     }, void 0, true, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 129,
+                                        lineNumber: 130,
                                         columnNumber: 13
                                     }, undefined)
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 124,
+                                lineNumber: 125,
                                 columnNumber: 11
                             }, undefined)
                         ]
                     }, void 0, true, {
                         fileName: "src/pages/Dashboard.tsx",
-                        lineNumber: 108,
+                        lineNumber: 109,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("main", {
@@ -97283,12 +97098,12 @@ const Dashboard = ()=>{
                                                         className: "text-blue-600"
                                                     }, void 0, false, {
                                                         fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 143,
+                                                        lineNumber: 144,
                                                         columnNumber: 19
                                                     }, undefined)
                                                 }, void 0, false, {
                                                     fileName: "src/pages/Dashboard.tsx",
-                                                    lineNumber: 142,
+                                                    lineNumber: 143,
                                                     columnNumber: 17
                                                 }, undefined),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97298,32 +97113,32 @@ const Dashboard = ()=>{
                                                             children: "Temas Activos"
                                                         }, void 0, false, {
                                                             fileName: "src/pages/Dashboard.tsx",
-                                                            lineNumber: 146,
+                                                            lineNumber: 147,
                                                             columnNumber: 19
                                                         }, undefined),
                                                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                                                             className: "text-3xl font-bold text-gray-900",
-                                                            children: topics.length
+                                                            children: studyTopics.length
                                                         }, void 0, false, {
                                                             fileName: "src/pages/Dashboard.tsx",
-                                                            lineNumber: 147,
+                                                            lineNumber: 148,
                                                             columnNumber: 19
                                                         }, undefined)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "src/pages/Dashboard.tsx",
-                                                    lineNumber: 145,
+                                                    lineNumber: 146,
                                                     columnNumber: 17
                                                 }, undefined)
                                             ]
                                         }, void 0, true, {
                                             fileName: "src/pages/Dashboard.tsx",
-                                            lineNumber: 141,
+                                            lineNumber: 142,
                                             columnNumber: 15
                                         }, undefined)
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 140,
+                                        lineNumber: 141,
                                         columnNumber: 13
                                     }, undefined),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97338,12 +97153,12 @@ const Dashboard = ()=>{
                                                         className: "text-green-600"
                                                     }, void 0, false, {
                                                         fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 154,
+                                                        lineNumber: 155,
                                                         columnNumber: 19
                                                     }, undefined)
                                                 }, void 0, false, {
                                                     fileName: "src/pages/Dashboard.tsx",
-                                                    lineNumber: 153,
+                                                    lineNumber: 154,
                                                     columnNumber: 17
                                                 }, undefined),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97353,7 +97168,7 @@ const Dashboard = ()=>{
                                                             children: "Tarjetas Total"
                                                         }, void 0, false, {
                                                             fileName: "src/pages/Dashboard.tsx",
-                                                            lineNumber: 157,
+                                                            lineNumber: 158,
                                                             columnNumber: 19
                                                         }, undefined),
                                                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -97361,24 +97176,24 @@ const Dashboard = ()=>{
                                                             children: studyTopics.reduce((sum, topic)=>sum + topic.cards, 0)
                                                         }, void 0, false, {
                                                             fileName: "src/pages/Dashboard.tsx",
-                                                            lineNumber: 158,
+                                                            lineNumber: 159,
                                                             columnNumber: 19
                                                         }, undefined)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "src/pages/Dashboard.tsx",
-                                                    lineNumber: 156,
+                                                    lineNumber: 157,
                                                     columnNumber: 17
                                                 }, undefined)
                                             ]
                                         }, void 0, true, {
                                             fileName: "src/pages/Dashboard.tsx",
-                                            lineNumber: 152,
+                                            lineNumber: 153,
                                             columnNumber: 15
                                         }, undefined)
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 152,
                                         columnNumber: 13
                                     }, undefined),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97393,12 +97208,12 @@ const Dashboard = ()=>{
                                                         className: "text-purple-600"
                                                     }, void 0, false, {
                                                         fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 165,
+                                                        lineNumber: 168,
                                                         columnNumber: 19
                                                     }, undefined)
                                                 }, void 0, false, {
                                                     fileName: "src/pages/Dashboard.tsx",
-                                                    lineNumber: 164,
+                                                    lineNumber: 167,
                                                     columnNumber: 17
                                                 }, undefined),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97408,32 +97223,35 @@ const Dashboard = ()=>{
                                                             children: "Racha Actual"
                                                         }, void 0, false, {
                                                             fileName: "src/pages/Dashboard.tsx",
-                                                            lineNumber: 168,
+                                                            lineNumber: 171,
                                                             columnNumber: 19
                                                         }, undefined),
                                                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                                                             className: "text-3xl font-bold text-gray-900",
-                                                            children: "7 d\xedas"
-                                                        }, void 0, false, {
+                                                            children: [
+                                                                dashboardData?.stats?.currentStreak || 0,
+                                                                " d\xedas"
+                                                            ]
+                                                        }, void 0, true, {
                                                             fileName: "src/pages/Dashboard.tsx",
-                                                            lineNumber: 169,
+                                                            lineNumber: 172,
                                                             columnNumber: 19
                                                         }, undefined)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "src/pages/Dashboard.tsx",
-                                                    lineNumber: 167,
+                                                    lineNumber: 170,
                                                     columnNumber: 17
                                                 }, undefined)
                                             ]
                                         }, void 0, true, {
                                             fileName: "src/pages/Dashboard.tsx",
-                                            lineNumber: 163,
+                                            lineNumber: 166,
                                             columnNumber: 15
                                         }, undefined)
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 162,
+                                        lineNumber: 165,
                                         columnNumber: 13
                                     }, undefined),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97448,12 +97266,12 @@ const Dashboard = ()=>{
                                                         className: "text-orange-600"
                                                     }, void 0, false, {
                                                         fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 176,
+                                                        lineNumber: 179,
                                                         columnNumber: 19
                                                     }, undefined)
                                                 }, void 0, false, {
                                                     fileName: "src/pages/Dashboard.tsx",
-                                                    lineNumber: 175,
+                                                    lineNumber: 178,
                                                     columnNumber: 17
                                                 }, undefined),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97463,7 +97281,7 @@ const Dashboard = ()=>{
                                                             children: "Progreso Promedio"
                                                         }, void 0, false, {
                                                             fileName: "src/pages/Dashboard.tsx",
-                                                            lineNumber: 179,
+                                                            lineNumber: 182,
                                                             columnNumber: 19
                                                         }, undefined),
                                                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -97474,231 +97292,45 @@ const Dashboard = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "src/pages/Dashboard.tsx",
-                                                            lineNumber: 180,
+                                                            lineNumber: 183,
                                                             columnNumber: 19
                                                         }, undefined)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "src/pages/Dashboard.tsx",
-                                                    lineNumber: 178,
+                                                    lineNumber: 181,
                                                     columnNumber: 17
                                                 }, undefined)
                                             ]
                                         }, void 0, true, {
                                             fileName: "src/pages/Dashboard.tsx",
-                                            lineNumber: 174,
+                                            lineNumber: 177,
                                             columnNumber: 15
                                         }, undefined)
                                     }, void 0, false, {
                                         fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 173,
+                                        lineNumber: 176,
                                         columnNumber: 13
                                     }, undefined)
                                 ]
                             }, void 0, true, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 139,
+                                lineNumber: 140,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
-                                children: [
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                        className: "bg-white rounded-xl shadow-sm border border-gray-200 lg:col-span-2",
-                                        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _topicsManager.TopicsManager), {
-                                            onSelectTopic: setSelectedTopicId
-                                        }, void 0, false, {
-                                            fileName: "src/pages/Dashboard.tsx",
-                                            lineNumber: 189,
-                                            columnNumber: 15
-                                        }, undefined)
-                                    }, void 0, false, {
-                                        fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 188,
-                                        columnNumber: 13
-                                    }, undefined),
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                        className: "flex flex-col gap-6",
-                                        children: [
-                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                className: "bg-white rounded-xl shadow-sm border border-gray-200 p-6",
-                                                children: [
-                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                                                        className: "text-lg font-bold text-gray-900 mb-4",
-                                                        children: "Sesiones de Hoy"
-                                                    }, void 0, false, {
-                                                        fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 196,
-                                                        columnNumber: 17
-                                                    }, undefined),
-                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                        className: "flex flex-col gap-3 mb-4",
-                                                        children: todaysSessions.map((session, index)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                                className: "flex items-center justify-between p-3 bg-gray-100 rounded-xl",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                                                                                className: "font-medium text-gray-900 text-sm",
-                                                                                children: session.topic
-                                                                            }, void 0, false, {
-                                                                                fileName: "src/pages/Dashboard.tsx",
-                                                                                lineNumber: 201,
-                                                                                columnNumber: 25
-                                                                            }, undefined),
-                                                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                                                                                className: "text-xs text-gray-600",
-                                                                                children: [
-                                                                                    session.cards,
-                                                                                    " tarjetas"
-                                                                                ]
-                                                                            }, void 0, true, {
-                                                                                fileName: "src/pages/Dashboard.tsx",
-                                                                                lineNumber: 202,
-                                                                                columnNumber: 25
-                                                                            }, undefined)
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "src/pages/Dashboard.tsx",
-                                                                        lineNumber: 200,
-                                                                        columnNumber: 23
-                                                                    }, undefined),
-                                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                                                        className: `px-2 py-1 text-xs font-medium rounded-lg ${session.type === 'review' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`,
-                                                                        children: session.type === 'review' ? 'Repaso' : 'Nuevo'
-                                                                    }, void 0, false, {
-                                                                        fileName: "src/pages/Dashboard.tsx",
-                                                                        lineNumber: 204,
-                                                                        columnNumber: 23
-                                                                    }, undefined)
-                                                                ]
-                                                            }, index, true, {
-                                                                fileName: "src/pages/Dashboard.tsx",
-                                                                lineNumber: 199,
-                                                                columnNumber: 21
-                                                            }, undefined))
-                                                    }, void 0, false, {
-                                                        fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 197,
-                                                        columnNumber: 17
-                                                    }, undefined),
-                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                                        className: "w-full px-4 py-3 rounded-xl font-medium text-white bg-gradient-to-br from-indigo-500 to-purple-600 hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300",
-                                                        children: "Comenzar Sesi\xf3n"
-                                                    }, void 0, false, {
-                                                        fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 210,
-                                                        columnNumber: 17
-                                                    }, undefined)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "src/pages/Dashboard.tsx",
-                                                lineNumber: 195,
-                                                columnNumber: 15
-                                            }, undefined),
-                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                className: "bg-white rounded-xl shadow-sm border border-gray-200 p-6",
-                                                children: [
-                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                                                        className: "text-lg font-bold text-gray-900 mb-4",
-                                                        children: "Progreso Semanal"
-                                                    }, void 0, false, {
-                                                        fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 217,
-                                                        columnNumber: 17
-                                                    }, undefined),
-                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                        className: "flex flex-col gap-4",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                                className: "flex justify-between items-center",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                                                        className: "text-sm text-gray-600",
-                                                                        children: "Tarjetas estudiadas"
-                                                                    }, void 0, false, {
-                                                                        fileName: "src/pages/Dashboard.tsx",
-                                                                        lineNumber: 220,
-                                                                        columnNumber: 21
-                                                                    }, undefined),
-                                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                                                        className: "font-semibold text-gray-900",
-                                                                        children: "89/120"
-                                                                    }, void 0, false, {
-                                                                        fileName: "src/pages/Dashboard.tsx",
-                                                                        lineNumber: 221,
-                                                                        columnNumber: 21
-                                                                    }, undefined)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "src/pages/Dashboard.tsx",
-                                                                lineNumber: 219,
-                                                                columnNumber: 19
-                                                            }, undefined),
-                                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                                className: "w-full bg-gray-200 rounded-full h-2 overflow-hidden",
-                                                                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                                    className: "h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full",
-                                                                    style: {
-                                                                        width: '74%'
-                                                                    }
-                                                                }, void 0, false, {
-                                                                    fileName: "src/pages/Dashboard.tsx",
-                                                                    lineNumber: 224,
-                                                                    columnNumber: 21
-                                                                }, undefined)
-                                                            }, void 0, false, {
-                                                                fileName: "src/pages/Dashboard.tsx",
-                                                                lineNumber: 223,
-                                                                columnNumber: 19
-                                                            }, undefined),
-                                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                                                className: "flex justify-between items-center",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                                                        className: "text-sm text-gray-600",
-                                                                        children: "Tiempo total"
-                                                                    }, void 0, false, {
-                                                                        fileName: "src/pages/Dashboard.tsx",
-                                                                        lineNumber: 227,
-                                                                        columnNumber: 21
-                                                                    }, undefined),
-                                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                                                        className: "font-semibold text-gray-900",
-                                                                        children: "12h 30min"
-                                                                    }, void 0, false, {
-                                                                        fileName: "src/pages/Dashboard.tsx",
-                                                                        lineNumber: 228,
-                                                                        columnNumber: 21
-                                                                    }, undefined)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "src/pages/Dashboard.tsx",
-                                                                lineNumber: 226,
-                                                                columnNumber: 19
-                                                            }, undefined)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "src/pages/Dashboard.tsx",
-                                                        lineNumber: 218,
-                                                        columnNumber: 17
-                                                    }, undefined)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "src/pages/Dashboard.tsx",
-                                                lineNumber: 216,
-                                                columnNumber: 15
-                                            }, undefined)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "src/pages/Dashboard.tsx",
-                                        lineNumber: 193,
-                                        columnNumber: 13
-                                    }, undefined)
-                                ]
-                            }, void 0, true, {
+                                className: "bg-white rounded-xl shadow-sm border border-gray-200 lg:col-span-2",
+                                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _topicsManager.TopicsManager), {
+                                    onSelectTopic: setSelectedTopicId,
+                                    topics: studyTopics
+                                }, void 0, false, {
+                                    fileName: "src/pages/Dashboard.tsx",
+                                    lineNumber: 195,
+                                    columnNumber: 13
+                                }, undefined)
+                            }, void 0, false, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 186,
+                                lineNumber: 194,
                                 columnNumber: 11
                             }, undefined),
                             selectedTopicId && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -97707,177 +97339,35 @@ const Dashboard = ()=>{
                                     topicId: selectedTopicId
                                 }, void 0, false, {
                                     fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 238,
+                                    lineNumber: 201,
                                     columnNumber: 15
                                 }, undefined)
                             }, void 0, false, {
                                 fileName: "src/pages/Dashboard.tsx",
-                                lineNumber: 237,
+                                lineNumber: 200,
                                 columnNumber: 13
                             }, undefined)
                         ]
                     }, void 0, true, {
                         fileName: "src/pages/Dashboard.tsx",
-                        lineNumber: 137,
+                        lineNumber: 138,
                         columnNumber: 9
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/pages/Dashboard.tsx",
-                lineNumber: 106,
-                columnNumber: 7
-            }, undefined),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200 shadow-lg z-20",
-                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("nav", {
-                    className: "flex justify-around p-3",
-                    children: [
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
-                            href: "#",
-                            className: "flex flex-col items-center text-sm font-medium text-indigo-600",
-                            children: [
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _lucideReact.Home), {
-                                    size: 24
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 248,
-                                    columnNumber: 13
-                                }, undefined),
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                    className: "mt-1",
-                                    children: "Dashboard"
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 249,
-                                    columnNumber: 13
-                                }, undefined)
-                            ]
-                        }, void 0, true, {
-                            fileName: "src/pages/Dashboard.tsx",
-                            lineNumber: 247,
-                            columnNumber: 11
-                        }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
-                            href: "#",
-                            className: "flex flex-col items-center text-sm font-medium text-gray-500 hover:text-indigo-600",
-                            children: [
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _lucideReact.BookOpen), {
-                                    size: 24
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 252,
-                                    columnNumber: 13
-                                }, undefined),
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                    className: "mt-1",
-                                    children: "Temas"
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 253,
-                                    columnNumber: 13
-                                }, undefined)
-                            ]
-                        }, void 0, true, {
-                            fileName: "src/pages/Dashboard.tsx",
-                            lineNumber: 251,
-                            columnNumber: 11
-                        }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
-                            href: "#",
-                            className: "flex flex-col items-center text-sm font-medium text-gray-500 hover:text-indigo-600",
-                            children: [
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _lucideReact.Plus), {
-                                    size: 24
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 256,
-                                    columnNumber: 13
-                                }, undefined),
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                    className: "mt-1",
-                                    children: "Nuevo"
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 257,
-                                    columnNumber: 13
-                                }, undefined)
-                            ]
-                        }, void 0, true, {
-                            fileName: "src/pages/Dashboard.tsx",
-                            lineNumber: 255,
-                            columnNumber: 11
-                        }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
-                            href: "#",
-                            className: "flex flex-col items-center text-sm font-medium text-gray-500 hover:text-indigo-600",
-                            children: [
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _lucideReact.Calendar), {
-                                    size: 24
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 260,
-                                    columnNumber: 13
-                                }, undefined),
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                    className: "mt-1",
-                                    children: "Calendario"
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 261,
-                                    columnNumber: 13
-                                }, undefined)
-                            ]
-                        }, void 0, true, {
-                            fileName: "src/pages/Dashboard.tsx",
-                            lineNumber: 259,
-                            columnNumber: 11
-                        }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
-                            href: "#",
-                            className: "flex flex-col items-center text-sm font-medium text-gray-500 hover:text-indigo-600",
-                            children: [
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _lucideReact.Settings), {
-                                    size: 24
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 264,
-                                    columnNumber: 13
-                                }, undefined),
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                                    className: "mt-1",
-                                    children: "Config"
-                                }, void 0, false, {
-                                    fileName: "src/pages/Dashboard.tsx",
-                                    lineNumber: 265,
-                                    columnNumber: 13
-                                }, undefined)
-                            ]
-                        }, void 0, true, {
-                            fileName: "src/pages/Dashboard.tsx",
-                            lineNumber: 263,
-                            columnNumber: 11
-                        }, undefined)
-                    ]
-                }, void 0, true, {
-                    fileName: "src/pages/Dashboard.tsx",
-                    lineNumber: 246,
-                    columnNumber: 9
-                }, undefined)
-            }, void 0, false, {
-                fileName: "src/pages/Dashboard.tsx",
-                lineNumber: 245,
+                lineNumber: 108,
                 columnNumber: 7
             }, undefined)
         ]
     }, void 0, true, {
         fileName: "src/pages/Dashboard.tsx",
-        lineNumber: 62,
+        lineNumber: 64,
         columnNumber: 5
     }, undefined);
 };
-_s(Dashboard, "DYi/RCnDbjkDELj1sj7k3J86E18=", false, function() {
+_s(Dashboard, "e19pqbFCrdAp8nsj66mUAPWTYWU=", false, function() {
     return [
-        (0, _useTopics.useTopics),
         (0, _authContext.useAuth)
     ];
 });
@@ -97891,7 +97381,7 @@ $RefreshReg$(_c, "Dashboard");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","lucide-react":"2I7qR","../../hooks/useTopics":"XKeAs","../context/AuthContext":"3zDyC","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","../components/topicsManager":"8rJWv","../components/cardsManager":"hRXBu"}],"2I7qR":[function(require,module,exports,__globalThis) {
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","lucide-react":"2I7qR","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","../context/AuthContext":"3zDyC","../../hooks/useTopics":"XKeAs","../components/topicsManager":"8rJWv","../components/cardsManager":"hRXBu"}],"2I7qR":[function(require,module,exports,__globalThis) {
 /**
  * @license lucide-react v0.544.0 - ISC
  *
@@ -107511,7 +107001,7 @@ const useTopics = ()=>{
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react":"jMk1U","../src/context/AuthContext":"3zDyC","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"8rJWv":[function(require,module,exports,__globalThis) {
+},{"react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","../src/context/AuthContext":"3zDyC"}],"8rJWv":[function(require,module,exports,__globalThis) {
 var $parcel$ReactRefreshHelpers$461a = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 $parcel$ReactRefreshHelpers$461a.init();
 var prevRefreshReg = globalThis.$RefreshReg$;
@@ -107657,7 +107147,243 @@ $RefreshReg$(_c, "TopicsManager");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","../../hooks/useTopics":"XKeAs","./topicForm":"l9rxd","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","./topicList":"8Hp80"}],"l9rxd":[function(require,module,exports,__globalThis) {
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","../../hooks/useTopics":"XKeAs","./topicList":"8Hp80","./topicForm":"l9rxd","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"8Hp80":[function(require,module,exports,__globalThis) {
+var $parcel$ReactRefreshHelpers$194d = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+$parcel$ReactRefreshHelpers$194d.init();
+var prevRefreshReg = globalThis.$RefreshReg$;
+var prevRefreshSig = globalThis.$RefreshSig$;
+$parcel$ReactRefreshHelpers$194d.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "TopicList", ()=>TopicList);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _topicItem = require("./topicItem");
+const TopicList = ({ topics, onEdit, onDelete, onViewCards })=>{
+    if (topics.length === 0) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        className: "text-center py-8 text-gray-500",
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+            children: "No hay materias creadas. Crea tu primera materia para comenzar."
+        }, void 0, false, {
+            fileName: "src/components/topicList.tsx",
+            lineNumber: 14,
+            columnNumber: 9
+        }, undefined)
+    }, void 0, false, {
+        fileName: "src/components/topicList.tsx",
+        lineNumber: 13,
+        columnNumber: 7
+    }, undefined);
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        className: "bg-white rounded-lg shadow-sm p-4 border border-gray-200",
+        children: [
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "text-lg font-bold text-gray-900 mb-4",
+                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                    children: [
+                        "Tus Materias (",
+                        topics.length,
+                        ")"
+                    ]
+                }, void 0, true, {
+                    fileName: "src/components/topicList.tsx",
+                    lineNumber: 22,
+                    columnNumber: 9
+                }, undefined)
+            }, void 0, false, {
+                fileName: "src/components/topicList.tsx",
+                lineNumber: 21,
+                columnNumber: 7
+            }, undefined),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "space-y-4",
+                children: topics.map((topic)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _topicItem.TopicItem), {
+                        topic: topic,
+                        onEdit: onEdit,
+                        onDelete: onDelete,
+                        onViewCards: onViewCards
+                    }, topic.id, false, {
+                        fileName: "src/components/topicList.tsx",
+                        lineNumber: 26,
+                        columnNumber: 11
+                    }, undefined))
+            }, void 0, false, {
+                fileName: "src/components/topicList.tsx",
+                lineNumber: 24,
+                columnNumber: 7
+            }, undefined)
+        ]
+    }, void 0, true, {
+        fileName: "src/components/topicList.tsx",
+        lineNumber: 20,
+        columnNumber: 5
+    }, undefined);
+};
+_c = TopicList;
+var _c;
+$RefreshReg$(_c, "TopicList");
+
+  $parcel$ReactRefreshHelpers$194d.postlude(module);
+} finally {
+  globalThis.$RefreshReg$ = prevRefreshReg;
+  globalThis.$RefreshSig$ = prevRefreshSig;
+}
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","./topicItem":"hY69F","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"hY69F":[function(require,module,exports,__globalThis) {
+var $parcel$ReactRefreshHelpers$e02a = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+$parcel$ReactRefreshHelpers$e02a.init();
+var prevRefreshReg = globalThis.$RefreshReg$;
+var prevRefreshSig = globalThis.$RefreshSig$;
+$parcel$ReactRefreshHelpers$e02a.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "TopicItem", ()=>TopicItem);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _s = $RefreshSig$();
+const TopicItem = ({ topic, onEdit, onDelete, onViewCards })=>{
+    _s();
+    const [isDeleting, setIsDeleting] = (0, _react.useState)(false);
+    const handleDelete = async ()=>{
+        if (window.confirm(`\xbfEst\xe1s seguro de que quieres eliminar el tema "${topic.name}"? Esta acci\xf3n no se puede deshacer.`)) {
+            setIsDeleting(true);
+            try {
+                await onDelete(topic.id);
+            } catch (error) {
+                console.error('Error al eliminar tema:', error);
+            } finally{
+                setIsDeleting(false);
+            }
+        }
+    };
+    const handleViewCards = ()=>{
+        if (onViewCards) onViewCards(topic.id);
+    };
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        className: "bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 hover:shadow-md transition-shadow duration-200",
+        children: [
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "mb-3",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                        className: "text-xl font-bold text-gray-900 mb-2",
+                        children: topic.name
+                    }, void 0, false, {
+                        fileName: "src/components/topicItem.tsx",
+                        lineNumber: 34,
+                        columnNumber: 9
+                    }, undefined),
+                    topic.description && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                        className: "text-gray-600 mb-2",
+                        children: topic.description
+                    }, void 0, false, {
+                        fileName: "src/components/topicItem.tsx",
+                        lineNumber: 35,
+                        columnNumber: 31
+                    }, undefined),
+                    topic.category && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
+                        className: "inline-block bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-sm font-medium mb-2",
+                        children: topic.category
+                    }, void 0, false, {
+                        fileName: "src/components/topicItem.tsx",
+                        lineNumber: 36,
+                        columnNumber: 28
+                    }, undefined),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "flex justify-between text-sm text-gray-500 mt-3 border-t pt-2",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("small", {
+                                children: [
+                                    "Creado: ",
+                                    new Date(topic.createdAt).toLocaleDateString()
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/components/topicItem.tsx",
+                                lineNumber: 38,
+                                columnNumber: 11
+                            }, undefined),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("small", {
+                                children: [
+                                    "Actualizado: ",
+                                    new Date(topic.updatedAt).toLocaleDateString()
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/components/topicItem.tsx",
+                                lineNumber: 39,
+                                columnNumber: 11
+                            }, undefined)
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/components/topicItem.tsx",
+                        lineNumber: 37,
+                        columnNumber: 9
+                    }, undefined)
+                ]
+            }, void 0, true, {
+                fileName: "src/components/topicItem.tsx",
+                lineNumber: 33,
+                columnNumber: 7
+            }, undefined),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "flex gap-2 justify-end flex-wrap",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: ()=>onEdit(topic),
+                        className: "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors",
+                        children: "Editar"
+                    }, void 0, false, {
+                        fileName: "src/components/topicItem.tsx",
+                        lineNumber: 43,
+                        columnNumber: 9
+                    }, undefined),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: handleDelete,
+                        disabled: isDeleting,
+                        className: "bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors disabled:bg-red-300",
+                        children: isDeleting ? 'Eliminando...' : 'Eliminar'
+                    }, void 0, false, {
+                        fileName: "src/components/topicItem.tsx",
+                        lineNumber: 46,
+                        columnNumber: 9
+                    }, undefined),
+                    onViewCards && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: handleViewCards,
+                        className: "bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-1 rounded text-sm font-medium transition-colors",
+                        children: "Ver Tarjetas"
+                    }, void 0, false, {
+                        fileName: "src/components/topicItem.tsx",
+                        lineNumber: 50,
+                        columnNumber: 11
+                    }, undefined)
+                ]
+            }, void 0, true, {
+                fileName: "src/components/topicItem.tsx",
+                lineNumber: 42,
+                columnNumber: 7
+            }, undefined)
+        ]
+    }, void 0, true, {
+        fileName: "src/components/topicItem.tsx",
+        lineNumber: 32,
+        columnNumber: 5
+    }, undefined);
+};
+_s(TopicItem, "PcvudgQ4pB1b8YUmRhNmcS3boU8=");
+_c = TopicItem;
+var _c;
+$RefreshReg$(_c, "TopicItem");
+
+  $parcel$ReactRefreshHelpers$e02a.postlude(module);
+} finally {
+  globalThis.$RefreshReg$ = prevRefreshReg;
+  globalThis.$RefreshSig$ = prevRefreshSig;
+}
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"l9rxd":[function(require,module,exports,__globalThis) {
 var $parcel$ReactRefreshHelpers$8eaa = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 $parcel$ReactRefreshHelpers$8eaa.init();
 var prevRefreshReg = globalThis.$RefreshReg$;
@@ -107843,242 +107569,6 @@ $RefreshReg$(_c, "TopicForm");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"8Hp80":[function(require,module,exports,__globalThis) {
-var $parcel$ReactRefreshHelpers$194d = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
-$parcel$ReactRefreshHelpers$194d.init();
-var prevRefreshReg = globalThis.$RefreshReg$;
-var prevRefreshSig = globalThis.$RefreshSig$;
-$parcel$ReactRefreshHelpers$194d.prelude(module);
-
-try {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "TopicList", ()=>TopicList);
-var _jsxDevRuntime = require("react/jsx-dev-runtime");
-var _react = require("react");
-var _reactDefault = parcelHelpers.interopDefault(_react);
-var _topicItem = require("./topicItem");
-const TopicList = ({ topics, onEdit, onDelete, onViewCards })=>{
-    if (topics.length === 0) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: "text-center py-8 text-gray-500",
-        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-            children: "No hay materias creadas. Crea tu primera materia para comenzar."
-        }, void 0, false, {
-            fileName: "src/components/topicList.tsx",
-            lineNumber: 14,
-            columnNumber: 9
-        }, undefined)
-    }, void 0, false, {
-        fileName: "src/components/topicList.tsx",
-        lineNumber: 13,
-        columnNumber: 7
-    }, undefined);
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: "bg-white rounded-lg shadow-sm p-4 border border-gray-200",
-        children: [
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "text-lg font-bold text-gray-900 mb-4",
-                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                    children: [
-                        "Tus Materias (",
-                        topics.length,
-                        ")"
-                    ]
-                }, void 0, true, {
-                    fileName: "src/components/topicList.tsx",
-                    lineNumber: 22,
-                    columnNumber: 9
-                }, undefined)
-            }, void 0, false, {
-                fileName: "src/components/topicList.tsx",
-                lineNumber: 21,
-                columnNumber: 7
-            }, undefined),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "space-y-4",
-                children: topics.map((topic)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _topicItem.TopicItem), {
-                        topic: topic,
-                        onEdit: onEdit,
-                        onDelete: onDelete,
-                        onViewCards: onViewCards
-                    }, topic.id, false, {
-                        fileName: "src/components/topicList.tsx",
-                        lineNumber: 26,
-                        columnNumber: 11
-                    }, undefined))
-            }, void 0, false, {
-                fileName: "src/components/topicList.tsx",
-                lineNumber: 24,
-                columnNumber: 7
-            }, undefined)
-        ]
-    }, void 0, true, {
-        fileName: "src/components/topicList.tsx",
-        lineNumber: 20,
-        columnNumber: 5
-    }, undefined);
-};
-_c = TopicList;
-var _c;
-$RefreshReg$(_c, "TopicList");
-
-  $parcel$ReactRefreshHelpers$194d.postlude(module);
-} finally {
-  globalThis.$RefreshReg$ = prevRefreshReg;
-  globalThis.$RefreshSig$ = prevRefreshSig;
-}
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","./topicItem":"hY69F"}],"hY69F":[function(require,module,exports,__globalThis) {
-var $parcel$ReactRefreshHelpers$e02a = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
-$parcel$ReactRefreshHelpers$e02a.init();
-var prevRefreshReg = globalThis.$RefreshReg$;
-var prevRefreshSig = globalThis.$RefreshSig$;
-$parcel$ReactRefreshHelpers$e02a.prelude(module);
-
-try {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "TopicItem", ()=>TopicItem);
-var _jsxDevRuntime = require("react/jsx-dev-runtime");
-var _react = require("react");
-var _reactDefault = parcelHelpers.interopDefault(_react);
-var _s = $RefreshSig$();
-const TopicItem = ({ topic, onEdit, onDelete, onViewCards })=>{
-    _s();
-    const [isDeleting, setIsDeleting] = (0, _react.useState)(false);
-    const handleDelete = async ()=>{
-        if (window.confirm(`\xbfEst\xe1s seguro de que quieres eliminar el tema "${topic.name}"? Esta acci\xf3n no se puede deshacer.`)) {
-            setIsDeleting(true);
-            try {
-                await onDelete(topic.id);
-            } catch (error) {
-                console.error('Error al eliminar tema:', error);
-            } finally{
-                setIsDeleting(false);
-            }
-        }
-    };
-    const handleViewCards = ()=>{
-        if (onViewCards) onViewCards(topic.id);
-    };
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: "bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 hover:shadow-md transition-shadow duration-200",
-        children: [
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "mb-3",
-                children: [
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                        className: "text-xl font-bold text-gray-900 mb-2",
-                        children: topic.name
-                    }, void 0, false, {
-                        fileName: "src/components/topicItem.tsx",
-                        lineNumber: 34,
-                        columnNumber: 9
-                    }, undefined),
-                    topic.description && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                        className: "text-gray-600 mb-2",
-                        children: topic.description
-                    }, void 0, false, {
-                        fileName: "src/components/topicItem.tsx",
-                        lineNumber: 35,
-                        columnNumber: 31
-                    }, undefined),
-                    topic.category && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
-                        className: "inline-block bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-sm font-medium mb-2",
-                        children: topic.category
-                    }, void 0, false, {
-                        fileName: "src/components/topicItem.tsx",
-                        lineNumber: 36,
-                        columnNumber: 28
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "flex justify-between text-sm text-gray-500 mt-3 border-t pt-2",
-                        children: [
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("small", {
-                                children: [
-                                    "Creado: ",
-                                    new Date(topic.createdAt).toLocaleDateString()
-                                ]
-                            }, void 0, true, {
-                                fileName: "src/components/topicItem.tsx",
-                                lineNumber: 38,
-                                columnNumber: 11
-                            }, undefined),
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("small", {
-                                children: [
-                                    "Actualizado: ",
-                                    new Date(topic.updatedAt).toLocaleDateString()
-                                ]
-                            }, void 0, true, {
-                                fileName: "src/components/topicItem.tsx",
-                                lineNumber: 39,
-                                columnNumber: 11
-                            }, undefined)
-                        ]
-                    }, void 0, true, {
-                        fileName: "src/components/topicItem.tsx",
-                        lineNumber: 37,
-                        columnNumber: 9
-                    }, undefined)
-                ]
-            }, void 0, true, {
-                fileName: "src/components/topicItem.tsx",
-                lineNumber: 33,
-                columnNumber: 7
-            }, undefined),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "flex gap-2 justify-end flex-wrap",
-                children: [
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        onClick: ()=>onEdit(topic),
-                        className: "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors",
-                        children: "Editar"
-                    }, void 0, false, {
-                        fileName: "src/components/topicItem.tsx",
-                        lineNumber: 43,
-                        columnNumber: 9
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        onClick: handleDelete,
-                        disabled: isDeleting,
-                        className: "bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors disabled:bg-red-300",
-                        children: isDeleting ? 'Eliminando...' : 'Eliminar'
-                    }, void 0, false, {
-                        fileName: "src/components/topicItem.tsx",
-                        lineNumber: 46,
-                        columnNumber: 9
-                    }, undefined),
-                    onViewCards && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        onClick: handleViewCards,
-                        className: "bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-1 rounded text-sm font-medium transition-colors",
-                        children: "Ver Tarjetas"
-                    }, void 0, false, {
-                        fileName: "src/components/topicItem.tsx",
-                        lineNumber: 50,
-                        columnNumber: 11
-                    }, undefined)
-                ]
-            }, void 0, true, {
-                fileName: "src/components/topicItem.tsx",
-                lineNumber: 42,
-                columnNumber: 7
-            }, undefined)
-        ]
-    }, void 0, true, {
-        fileName: "src/components/topicItem.tsx",
-        lineNumber: 32,
-        columnNumber: 5
-    }, undefined);
-};
-_s(TopicItem, "PcvudgQ4pB1b8YUmRhNmcS3boU8=");
-_c = TopicItem;
-var _c;
-$RefreshReg$(_c, "TopicItem");
-
-  $parcel$ReactRefreshHelpers$e02a.postlude(module);
-} finally {
-  globalThis.$RefreshReg$ = prevRefreshReg;
-  globalThis.$RefreshSig$ = prevRefreshSig;
-}
 },{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"hRXBu":[function(require,module,exports,__globalThis) {
 var $parcel$ReactRefreshHelpers$2248 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 $parcel$ReactRefreshHelpers$2248.init();
@@ -108227,7 +107717,7 @@ $RefreshReg$(_c, "CardsManager");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","../../hooks/useCards":"dTamp","./cardList":"j3lkV","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","./cardForm":"2NyGx"}],"dTamp":[function(require,module,exports,__globalThis) {
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","../../hooks/useCards":"dTamp","./cardList":"j3lkV","./cardForm":"2NyGx","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"dTamp":[function(require,module,exports,__globalThis) {
 var $parcel$ReactRefreshHelpers$9f71 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 $parcel$ReactRefreshHelpers$9f71.init();
 var prevRefreshReg = globalThis.$RefreshReg$;
@@ -108443,7 +107933,7 @@ $RefreshReg$(_c, "CardList");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","./cardItem":"cTpet"}],"cTpet":[function(require,module,exports,__globalThis) {
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","./cardItem":"cTpet","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"cTpet":[function(require,module,exports,__globalThis) {
 var $parcel$ReactRefreshHelpers$e53c = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 $parcel$ReactRefreshHelpers$e53c.init();
 var prevRefreshReg = globalThis.$RefreshReg$;
@@ -108729,6 +108219,213 @@ $RefreshReg$(_c, "CardForm");
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}]},["7KwkS","4dmnR"], "4dmnR", "parcelRequireb2e7", {}, null, null, "http://localhost:1234")
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"1ImR9":[function(require,module,exports,__globalThis) {
+var $parcel$ReactRefreshHelpers$6f64 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+$parcel$ReactRefreshHelpers$6f64.init();
+var prevRefreshReg = globalThis.$RefreshReg$;
+var prevRefreshSig = globalThis.$RefreshSig$;
+$parcel$ReactRefreshHelpers$6f64.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _material = require("@mui/material");
+var _reactRouterDom = require("react-router-dom");
+var _authContext = require("../context/AuthContext");
+var _registerCss = require("./Register.css");
+var _s = $RefreshSig$();
+const Register = ()=>{
+    _s();
+    const [name, setName] = (0, _react.useState)('');
+    const [email, setEmail] = (0, _react.useState)('');
+    const [password, setPassword] = (0, _react.useState)('');
+    const [confirmPassword, setConfirmPassword] = (0, _react.useState)('');
+    const [error, setError] = (0, _react.useState)('');
+    const [success, setSuccess] = (0, _react.useState)('');
+    const { register } = (0, _authContext.useAuth)();
+    const navigate = (0, _reactRouterDom.useNavigate)();
+    const handleSubmit = async (e)=>{
+        e.preventDefault();
+        setError('');
+        setSuccess('');
+        if (password !== confirmPassword) {
+            setError("Las contrase\xf1as no coinciden");
+            return;
+        }
+        if (password.length < 6) {
+            setError("La contrase\xf1a debe tener al menos 6 caracteres");
+            return;
+        }
+        const success = await register(name, email, password);
+        if (success) {
+            setSuccess('Cuenta creada exitosamente. Redirigiendo al login...');
+            setTimeout(()=>navigate('/login'), 2000);
+        } else setError('Error al crear la cuenta. El email ya puede estar registrado.');
+    };
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        className: "register-container",
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            className: "login-form-container",
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Typography), {
+                    className: "welcome-message",
+                    component: "h1",
+                    gutterBottom: true,
+                    children: "Crear Cuenta"
+                }, void 0, false, {
+                    fileName: "src/pages/register.tsx",
+                    lineNumber: 44,
+                    columnNumber: 9
+                }, undefined),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Typography), {
+                    className: "subtitle",
+                    gutterBottom: true,
+                    children: "Reg\xedstrate para acceder a tu cuenta"
+                }, void 0, false, {
+                    fileName: "src/pages/register.tsx",
+                    lineNumber: 47,
+                    columnNumber: 9
+                }, undefined),
+                error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Alert), {
+                    className: "error-alert",
+                    severity: "error",
+                    children: error
+                }, void 0, false, {
+                    fileName: "src/pages/register.tsx",
+                    lineNumber: 51,
+                    columnNumber: 19
+                }, undefined),
+                success && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Alert), {
+                    className: "error-alert",
+                    severity: "success",
+                    children: success
+                }, void 0, false, {
+                    fileName: "src/pages/register.tsx",
+                    lineNumber: 52,
+                    columnNumber: 21
+                }, undefined),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("form", {
+                    onSubmit: handleSubmit,
+                    className: "login-form",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.TextField), {
+                            fullWidth: true,
+                            label: "Nombre completo",
+                            value: name,
+                            onChange: (e)=>setName(e.target.value),
+                            required: true,
+                            variant: "outlined"
+                        }, void 0, false, {
+                            fileName: "src/pages/register.tsx",
+                            lineNumber: 55,
+                            columnNumber: 11
+                        }, undefined),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.TextField), {
+                            fullWidth: true,
+                            label: "Email",
+                            type: "email",
+                            value: email,
+                            onChange: (e)=>setEmail(e.target.value),
+                            required: true,
+                            variant: "outlined"
+                        }, void 0, false, {
+                            fileName: "src/pages/register.tsx",
+                            lineNumber: 63,
+                            columnNumber: 11
+                        }, undefined),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.TextField), {
+                            fullWidth: true,
+                            label: "Contrase\xf1a",
+                            type: "password",
+                            value: password,
+                            onChange: (e)=>setPassword(e.target.value),
+                            required: true,
+                            variant: "outlined"
+                        }, void 0, false, {
+                            fileName: "src/pages/register.tsx",
+                            lineNumber: 72,
+                            columnNumber: 11
+                        }, undefined),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.TextField), {
+                            fullWidth: true,
+                            label: "Confirmar contrase\xf1a",
+                            type: "password",
+                            value: confirmPassword,
+                            onChange: (e)=>setConfirmPassword(e.target.value),
+                            required: true,
+                            variant: "outlined"
+                        }, void 0, false, {
+                            fileName: "src/pages/register.tsx",
+                            lineNumber: 81,
+                            columnNumber: 11
+                        }, undefined),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Button), {
+                            type: "submit",
+                            fullWidth: true,
+                            className: "MuiButton-root",
+                            children: "Crear Cuenta"
+                        }, void 0, false, {
+                            fileName: "src/pages/register.tsx",
+                            lineNumber: 90,
+                            columnNumber: 11
+                        }, undefined)
+                    ]
+                }, void 0, true, {
+                    fileName: "src/pages/register.tsx",
+                    lineNumber: 54,
+                    columnNumber: 9
+                }, undefined),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _material.Typography), {
+                    className: "test-credentials",
+                    children: [
+                        "\xbfYa tienes cuenta?",
+                        ' ',
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactRouterDom.Link), {
+                            to: "/login",
+                            className: "text-blue-500 hover:text-blue-700 font-medium",
+                            children: "Inicia sesi\xf3n"
+                        }, void 0, false, {
+                            fileName: "src/pages/register.tsx",
+                            lineNumber: 97,
+                            columnNumber: 11
+                        }, undefined)
+                    ]
+                }, void 0, true, {
+                    fileName: "src/pages/register.tsx",
+                    lineNumber: 95,
+                    columnNumber: 9
+                }, undefined)
+            ]
+        }, void 0, true, {
+            fileName: "src/pages/register.tsx",
+            lineNumber: 43,
+            columnNumber: 7
+        }, undefined)
+    }, void 0, false, {
+        fileName: "src/pages/register.tsx",
+        lineNumber: 42,
+        columnNumber: 5
+    }, undefined);
+};
+_s(Register, "ClwBARGqibU5ivrF17jgBYc9CdM=", false, function() {
+    return [
+        (0, _authContext.useAuth),
+        (0, _reactRouterDom.useNavigate)
+    ];
+});
+_c = Register;
+exports.default = Register;
+var _c;
+$RefreshReg$(_c, "Register");
+
+  $parcel$ReactRefreshHelpers$6f64.postlude(module);
+} finally {
+  globalThis.$RefreshReg$ = prevRefreshReg;
+  globalThis.$RefreshSig$ = prevRefreshSig;
+}
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","@mui/material":"3KIXa","react-router-dom":"61z4w","../context/AuthContext":"3zDyC","./Register.css":"38xH8","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"38xH8":[function() {},{}]},["7KwkS","4dmnR"], "4dmnR", "parcelRequireb2e7", {}, null, null, "http://localhost:1234")
 
 //# sourceMappingURL=projectStudySpace.6efbc4f8.js.map

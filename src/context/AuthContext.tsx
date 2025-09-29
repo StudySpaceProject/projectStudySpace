@@ -7,6 +7,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
+  getDashboard: () => Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -67,13 +68,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+const getDashboard = async (): Promise<any> => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    const res = await fetch('http://localhost:4000/api/users/dashboard', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // Token guardado al login/register
+      },
+    });
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    return data.dashboard;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
   };
 
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout, getDashboard }}>
       {children}
     </AuthContext.Provider>
   );
