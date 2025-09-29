@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { TopicFormProps } from '../types/topics';
 
+// Convierte la opción de dificultad en color
+const getColorFromDifficulty = (difficulty: "easy" | "medium" | "hard") => {
+  switch (difficulty) {
+    case "easy": return "#10B981"; // verde
+    case "medium": return "#F59E0B"; // amarillo
+    case "hard": return "#EF4444"; // rojo
+    default: return "#3B82F6"; // azul por defecto
+  }
+};
+
 export const TopicForm: React.FC<TopicFormProps> = ({
   onSubmit,
   onCancel,
@@ -9,14 +19,20 @@ export const TopicForm: React.FC<TopicFormProps> = ({
 }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
-  const [category, setCategory] = useState(initialData?.category || '');
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      setName(initialData.name);
+      setName(initialData.name || '');
       setDescription(initialData.description || '');
-      setCategory(initialData.category || '');
+      // Inferir dificultad desde color si existe
+      switch (initialData.color) {
+        case "#10B981": setDifficulty("easy"); break;
+        case "#F59E0B": setDifficulty("medium"); break;
+        case "#EF4444": setDifficulty("hard"); break;
+        default: setDifficulty("medium");
+      }
     }
   }, [initialData]);
 
@@ -26,16 +42,14 @@ export const TopicForm: React.FC<TopicFormProps> = ({
 
     setIsSubmitting(true);
     try {
-      // Llama al onSubmit que en TopicsManager usará addTopic
       await onSubmit({
         name,
         description: description || undefined,
-        category: category || undefined,
+        color: getColorFromDifficulty(difficulty),
       });
-      // Se puede limpiar el form si quieres
       setName('');
       setDescription('');
-      setCategory('');
+      setDifficulty("medium");
     } catch (error) {
       console.error('Error al guardar tema:', error);
     } finally {
@@ -72,14 +86,17 @@ export const TopicForm: React.FC<TopicFormProps> = ({
       </div>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Categoría (opcional)</label>
-        <input
-          type="text"
-          value={category}
-          onChange={e => setCategory(e.target.value)}
+        <label className="block text-sm font-medium text-gray-700 mb-2">Categoría (Dificultad)</label>
+        <select
+          value={difficulty}
+          onChange={e => setDifficulty(e.target.value as "easy" | "medium" | "hard")}
           disabled={isSubmitting}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
-        />
+        >
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
       </div>
 
       <div className="flex gap-3 justify-end">
