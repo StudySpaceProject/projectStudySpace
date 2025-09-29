@@ -1,11 +1,19 @@
 export interface Topic {
   id: number;
   name: string;
-  description?: string;
-  category?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  cards: number;
+  lastStudied: string;
+  // Eliminamos difficulty porque ya no se guarda en la base de datos
+  progress: number;
+  createdAt: string;
+  updatedAt: string;
+  description: string;
+  color: string; // nuevo campo que indica categoría/dificultad
 }
+
+// Para crear un topic ahora enviamos color en lugar de difficulty
+export type CreateTopicData = Pick<Topic, 'name' | 'description' | 'color'>;
+export type UpdateTopicData = Partial<CreateTopicData>;
 
 export interface TopicItemProps {
   topic: Topic;
@@ -15,7 +23,7 @@ export interface TopicItemProps {
 }
 
 export interface TopicFormProps {
-  onSubmit: (topic: { name: string; description?: string; category?: string }) => void;
+  onSubmit: (topic: CreateTopicData | UpdateTopicData) => Promise<void>;
   onCancel: () => void;
   initialData?: Topic;
   isEditing?: boolean;
@@ -27,6 +35,3 @@ export interface TopicListProps {
   onDelete: (topicId: number) => void;
   onViewCards?: (topicId: number) => void;  // para navegar a las tarjetas del tema
 }
-
-export type CreateTopicData = Omit<Topic, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateTopicData = Partial<CreateTopicData>;
