@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Bell,
   Brain,
@@ -43,48 +44,48 @@ const Dashboard = () => {
           </h1>
         </div>
         <nav className="p-4 flex flex-col gap-2">
-          <a
-            href="#"
+          <Link
+            to="/dashboard"
             className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600"
           >
             <Home size={20} /> Dashboard
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="#"
             className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600"
           >
             <BookOpen size={20} /> Mis Temas
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="/study-sections"
             className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600"
           >
-            <FileText size={20} /> Tarjetas
-          </a>
-          <a
-            href="#"
+            <FileText size={20} /> Sesiones de Estudio
+          </Link>
+          <Link
+            to="#"
             className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600"
           >
             <Calendar size={20} /> Calendario
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="#"
             className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600"
           >
             <TrendingUp size={20} /> Progreso
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="#"
             className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600"
           >
             <Users size={20} /> Comunidad
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="#"
             className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600"
           >
             <Settings size={20} /> Configuración
-          </a>
+          </Link>
         </nav>
       </div>
 
