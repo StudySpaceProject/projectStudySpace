@@ -3,7 +3,11 @@ import { Card, CreateCardData, UpdateCardData } from "../src/types/cards";
 import { useAuth } from "../src/context/AuthContext";
 import { API_URL } from "../src/config";
 
+console.log("API_URL importado:", API_URL);
+
 const API_BASE_URL = API_URL || "http://localhost:3000/api"; // añadir al .env ¿?
+
+console.log("API_BASE_URL final:", API_BASE_URL);
 
 export const useCards = () => {
   const [cards, setCards] = useState<Card[]>([]);
@@ -11,13 +15,26 @@ export const useCards = () => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
+  //funcion para obtener token
+  const getToken = () => {
+    const token = localStorage.getItem("token");
+    if (!token)
+      throw new Error("No se encontró token. Por favor inicia sesión.");
+    return token;
+  };
+
   const fetchCardsByTopic = async (topicId: number): Promise<Card[]> => {
     if (!user) throw new Error("Usuario no autenticado");
 
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/cards/topic/${topicId}`);
+      const token = getToken();
+      const response = await fetch(`${API_BASE_URL}/cards/topic/${topicId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) throw new Error("Error al obtener tarjetas");
 
       const data = await response.json();
@@ -37,10 +54,16 @@ export const useCards = () => {
     setLoading(true);
     setError(null);
     try {
+      const token = getToken();
       const response = await fetch(
         `${API_BASE_URL}/cards/search/${user.id}?search=${encodeURIComponent(
           searchTerm
-        )}`
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (!response.ok) throw new Error("Error al buscar tarjetas");
 
@@ -60,10 +83,12 @@ export const useCards = () => {
     setLoading(true);
     setError(null);
     try {
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/cards`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(cardData),
       });
@@ -88,10 +113,12 @@ export const useCards = () => {
     setLoading(true);
     setError(null);
     try {
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/cards/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updates),
       });
@@ -115,8 +142,12 @@ export const useCards = () => {
     setLoading(true);
     setError(null);
     try {
+      const token = getToken();
       const response = await fetch(`${API_BASE_URL}/cards/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) throw new Error("Error al eliminar tarjeta");
