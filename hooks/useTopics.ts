@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Topic, CreateTopicData, UpdateTopicData } from '../src/types/topics';
-import { useAuth } from '../src/context/AuthContext';
+import { useState } from "react";
+import { Topic, CreateTopicData, UpdateTopicData } from "../src/types/topics";
+import { useAuth } from "../src/context/AuthContext";
+import { API_URL } from "../src/config";
 
 // Usando variable de entorno para producción o desarrollo
-const API_BASE_URL = process.env.API_URL || 'http://localhost:4000/api';
+const API_BASE_URL = API_URL || "http://localhost:4000/api";
 
 export const useTopics = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -12,20 +13,21 @@ export const useTopics = () => {
   const { user } = useAuth();
 
   const getToken = () => {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('No se encontró token. Por favor inicia sesión.');
+    const token = localStorage.getItem("token");
+    if (!token)
+      throw new Error("No se encontró token. Por favor inicia sesión.");
     return token;
   };
 
   const fetchUserTopics = async (): Promise<Topic[]> => {
-    if (!user) throw new Error('Usuario no autenticado');
-    
+    if (!user) throw new Error("Usuario no autenticado");
+
     setLoading(true);
     setError(null);
     try {
       const token = getToken();
       const response = await fetch(`${API_BASE_URL}/topics`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
@@ -37,25 +39,27 @@ export const useTopics = () => {
       setTopics(data.topics || []);
       return data.topics || [];
     } catch (err: any) {
-      setError(err.message || 'Error desconocido');
+      setError(err.message || "Error desconocido");
       return [];
     } finally {
       setLoading(false);
     }
   };
 
-  const addTopic = async (topicData: CreateTopicData): Promise<Topic | null> => {
-    if (!user) throw new Error('Usuario no autenticado');
+  const addTopic = async (
+    topicData: CreateTopicData
+  ): Promise<Topic | null> => {
+    if (!user) throw new Error("Usuario no autenticado");
 
     setLoading(true);
     setError(null);
     try {
       const token = getToken();
       const response = await fetch(`${API_BASE_URL}/topics`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(topicData),
       });
@@ -67,26 +71,29 @@ export const useTopics = () => {
 
       const data = await response.json();
       const newTopic: Topic = data.topic;
-      setTopics(prev => [...prev, newTopic]);
+      setTopics((prev) => [...prev, newTopic]);
       return newTopic;
     } catch (err: any) {
-      setError(err.message || 'Error desconocido');
+      setError(err.message || "Error desconocido");
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  const updateTopic = async (id: number, updates: UpdateTopicData): Promise<Topic | null> => {
+  const updateTopic = async (
+    id: number,
+    updates: UpdateTopicData
+  ): Promise<Topic | null> => {
     setLoading(true);
     setError(null);
     try {
       const token = getToken();
       const response = await fetch(`${API_BASE_URL}/topics/${id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updates),
       });
@@ -98,10 +105,12 @@ export const useTopics = () => {
 
       const data = await response.json();
       const updatedTopic: Topic = data.topic;
-      setTopics(prev => prev.map(topic => topic.id === id ? updatedTopic : topic));
+      setTopics((prev) =>
+        prev.map((topic) => (topic.id === id ? updatedTopic : topic))
+      );
       return updatedTopic;
     } catch (err: any) {
-      setError(err.message || 'Error desconocido');
+      setError(err.message || "Error desconocido");
       return null;
     } finally {
       setLoading(false);
@@ -114,8 +123,8 @@ export const useTopics = () => {
     try {
       const token = getToken();
       const response = await fetch(`${API_BASE_URL}/topics/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
@@ -123,10 +132,10 @@ export const useTopics = () => {
         throw new Error(`Error al eliminar tema: ${msg}`);
       }
 
-      setTopics(prev => prev.filter(topic => topic.id !== id));
+      setTopics((prev) => prev.filter((topic) => topic.id !== id));
       return true;
     } catch (err: any) {
-      setError(err.message || 'Error desconocido');
+      setError(err.message || "Error desconocido");
       return false;
     } finally {
       setLoading(false);
@@ -139,7 +148,7 @@ export const useTopics = () => {
     try {
       const token = getToken();
       const response = await fetch(`${API_BASE_URL}/topics/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
@@ -150,7 +159,7 @@ export const useTopics = () => {
       const data = await response.json();
       return data.topic || null;
     } catch (err: any) {
-      setError(err.message || 'Error desconocido');
+      setError(err.message || "Error desconocido");
       return null;
     } finally {
       setLoading(false);
