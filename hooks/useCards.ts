@@ -3,11 +3,7 @@ import { Card, CreateCardData, UpdateCardData } from "../src/types/cards";
 import { useAuth } from "../src/context/AuthContext";
 import { API_URL } from "../src/config";
 
-console.log("API_URL importado:", API_URL);
-
 const API_BASE_URL = API_URL || "http://localhost:3000/api"; // añadir al .env ¿?
-
-console.log("API_BASE_URL final:", API_BASE_URL);
 
 export const useCards = () => {
   const [cards, setCards] = useState<Card[]>([]);
