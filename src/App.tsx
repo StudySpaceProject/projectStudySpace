@@ -7,6 +7,7 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import StudySections from './pages/StudySections';
 
 const theme = createTheme({
   palette: {
@@ -22,6 +23,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
       <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />} />
       <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
+      <Route path="/study-sections" element={isAuthenticated ? <StudySections /> : <Navigate to="/login" />} />
     </Routes>
   );
 };
