@@ -38,10 +38,12 @@ export const useCards = () => {
       if (!response.ok) throw new Error("Error al obtener tarjetas");
 
       const data = await response.json();
-      setCards(data);
+      const cardsArray = data.cards || [];
+      setCards(cardsArray);
       return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
+      setCards([]);
       throw err;
     } finally {
       setLoading(false);
@@ -68,9 +70,12 @@ export const useCards = () => {
       if (!response.ok) throw new Error("Error al buscar tarjetas");
 
       const data = await response.json();
-      return data;
+      const cardsArray = data.cards || [];
+      setCards(cardsArray);
+      return cardsArray;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
+      setCards([]);
       throw err;
     } finally {
       setLoading(false);
@@ -96,8 +101,8 @@ export const useCards = () => {
       if (!response.ok) throw new Error("Error al crear tarjeta");
 
       const newCard = await response.json();
-      setCards((prev) => [...prev, newCard]);
-      return newCard;
+      setCards((prev) => [...prev, newCard.card]);
+      return newCard.card;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
       throw err;
