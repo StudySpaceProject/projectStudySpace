@@ -1,6 +1,8 @@
 #dist
-
 dist/
+
+#vsCode
+.vscode/
 
 # Dependencies
 node_modules/
