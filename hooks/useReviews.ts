@@ -5,7 +5,7 @@ import {
   ReviewSession 
 } from '../src/types/reviews';
 
-const API_BASE = '/api/spaced-repetition';
+const API_BASE = 'http://localhost:3000/api/reviews';  // REVISAR !!!!
 
 export const useReviews = () => {
   const [pendingReviews, setPendingReviews] = useState<ScheduledReview[]>([]);
@@ -29,7 +29,13 @@ export const useReviews = () => {
 
   const fetchPendingReviews = async () => {
     try {
-      const response = await fetch(`${API_BASE}/pending-reviews`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/pending`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (!response.ok) throw new Error('Error de carga de revisiones de hoy');
       const data = await response.json();
       setPendingReviews(data.pendingReviews);
@@ -40,7 +46,13 @@ export const useReviews = () => {
 
   const fetchUpcomingReviews = async (days: number = 7) => {
     try {
-      const response = await fetch(`${API_BASE}/upcoming-reviews?days=${days}`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/upcoming?days=${days}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (!response.ok) throw new Error('Error de carga de revisiones de los próximos días');
       const data = await response.json();
       setUpcomingReviews(data.upcomingReviews);
@@ -51,9 +63,11 @@ export const useReviews = () => {
 
   const completeReview = async (scheduledReviewId: number, difficultyRating: 1 | 2 | 3) => {
     try {
-      const response = await fetch(`${API_BASE}/complete-review`, {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/complete`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -77,9 +91,11 @@ export const useReviews = () => {
 
   const rescheduleReview = async (reviewId: number, newDate: string) => {
     try {
-      const response = await fetch(`${API_BASE}/${reviewId}/reschedule`, {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/reschedule/${reviewId}`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ newDate }),

@@ -90,7 +90,7 @@ const Dashboard = () => {
               <BookOpen size={20} /> Mis Temas
             </Link>
             <Link
-              to="/study-sections"
+              to="/study-sessions"
               className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600"
             >
               <FileText size={20} /> Sesiones de Estudio
