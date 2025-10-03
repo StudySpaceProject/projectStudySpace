@@ -5,7 +5,7 @@ import {
   ReviewSession 
 } from '../src/types/reviews';
 
-const API_BASE = '/api/reviews';
+const API_BASE = '/api/spaced-repetition';
 
 export const useReviews = () => {
   const [pendingReviews, setPendingReviews] = useState<ScheduledReview[]>([]);
@@ -29,7 +29,7 @@ export const useReviews = () => {
 
   const fetchPendingReviews = async () => {
     try {
-      const response = await fetch(`${API_BASE}/pending`);
+      const response = await fetch(`${API_BASE}/pending-reviews`);
       if (!response.ok) throw new Error('Error de carga de revisiones de hoy');
       const data = await response.json();
       setPendingReviews(data.pendingReviews);
@@ -40,7 +40,7 @@ export const useReviews = () => {
 
   const fetchUpcomingReviews = async (days: number = 7) => {
     try {
-      const response = await fetch(`${API_BASE}/upcoming?days=${days}`);
+      const response = await fetch(`${API_BASE}/upcoming-reviews?days=${days}`);
       if (!response.ok) throw new Error('Error de carga de revisiones de los próximos días');
       const data = await response.json();
       setUpcomingReviews(data.upcomingReviews);
@@ -51,7 +51,7 @@ export const useReviews = () => {
 
   const completeReview = async (scheduledReviewId: number, difficultyRating: 1 | 2 | 3) => {
     try {
-      const response = await fetch(`${API_BASE}/complete`, {
+      const response = await fetch(`${API_BASE}/complete-review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

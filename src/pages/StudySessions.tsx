@@ -1,4 +1,3 @@
-import React from 'react';
 import SpacedRepetitionDashboard from '../components/spacedRepetitionDashboard';
 
 const StudySessions = () => {
