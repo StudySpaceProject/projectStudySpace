@@ -4,8 +4,9 @@ import {
   UpcomingReviews,
   ReviewSession 
 } from '../src/types/reviews';
+import { API_URL } from "../src/config";
 
-const API_BASE = 'http://localhost:3000/api/reviews';  // REVISAR !!!!
+const API_BASE = API_URL || "http://localhost:3000/api";  // REVISAR !!!!
 
 export const useReviews = () => {
   const [pendingReviews, setPendingReviews] = useState<ScheduledReview[]>([]);
@@ -30,7 +31,7 @@ export const useReviews = () => {
   const fetchPendingReviews = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/pending`, {
+      const response = await fetch(`${API_BASE}/reviews/pending`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -47,7 +48,7 @@ export const useReviews = () => {
   const fetchUpcomingReviews = async (days: number = 7) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/upcoming?days=${days}`, {
+      const response = await fetch(`${API_BASE}/reviews/upcoming?days=${days}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -64,7 +65,7 @@ export const useReviews = () => {
   const completeReview = async (scheduledReviewId: number, difficultyRating: 1 | 2 | 3) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/complete`, {
+      const response = await fetch(`${API_BASE}/reviews/complete`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -92,7 +93,7 @@ export const useReviews = () => {
   const rescheduleReview = async (reviewId: number, newDate: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/reschedule/${reviewId}`, {
+      const response = await fetch(`${API_BASE}/reviews/reschedule/${reviewId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
