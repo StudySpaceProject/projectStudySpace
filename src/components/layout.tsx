@@ -1,18 +1,26 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import {
   Bell,
   Brain,
-  Home,
   BookOpen,
   FileText,
   Calendar,
   TrendingUp,
   Users,
   Settings,
+  LogOut,
 } from "lucide-react";
 import { GoogleCalendarAuth } from "./googleCalendarAuth";
+import { useAuth } from "../context/AuthContext";
 
 const Layout = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
       {/* Sidebar */}
@@ -63,6 +71,17 @@ const Layout = () => {
             <Settings size={20} /> Configuración
           </Link>
         </nav>
+
+        {/* Logout button at bottom */}
+        <div className="p-4 border-t border-gray-200">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 p-3 rounded-xl text-red-600 font-medium hover:bg-red-50 transition-colors"
+          >
+            <LogOut size={20} />
+            Cerrar sesión
+          </button>
+        </div>
       </div>
 
       {/* Contenido principal */}
