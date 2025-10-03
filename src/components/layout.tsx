@@ -1,5 +1,16 @@
 import { Outlet, Link } from "react-router-dom";
-import { Bell, Brain, Home, BookOpen, FileText, Calendar, TrendingUp, Users, Settings } from "lucide-react";
+import {
+  Bell,
+  Brain,
+  Home,
+  BookOpen,
+  FileText,
+  Calendar,
+  TrendingUp,
+  Users,
+  Settings,
+} from "lucide-react";
+import { GoogleCalendarAuth } from "./googleCalendarAuth";
 
 const Layout = () => {
   return (
@@ -66,6 +77,15 @@ const Layout = () => {
             <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
           </button>
         </header>
+
+        {/* Google Calendar Auth - Aparece en todas las páginas */}
+        <div className="mb-6">
+          <GoogleCalendarAuth
+            onAuthComplete={() => {
+              console.log("Google Calendar conectado exitosamente");
+            }}
+          />
+        </div>
 
         {/* Aquí se renderizan las páginas */}
         <Outlet />
