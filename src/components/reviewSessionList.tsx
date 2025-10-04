@@ -1,13 +1,14 @@
 import React from 'react';
 import { ReviewSession } from '../types/reviews';
 import ReviewSessionCard from './reviewSessionCard';
-import {  BookOpen } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 
 interface ReviewSessionListProps {
   sessions: ReviewSession[];
+  onSessionsUpdate?: () => void;
 }
 
-const ReviewSessionList: React.FC<ReviewSessionListProps> = ({ sessions }) => {
+const ReviewSessionList: React.FC<ReviewSessionListProps> = ({ sessions, onSessionsUpdate }) => {
   const groupedSessions = {
     pending: sessions.filter(s => s.type === 'pending'),
     upcoming: sessions.filter(s => s.type === 'upcoming'),
@@ -26,7 +27,11 @@ const ReviewSessionList: React.FC<ReviewSessionListProps> = ({ sessions }) => {
           </div>
           <div className="grid gap-4">
             {groupedSessions.pending.map(session => (
-              <ReviewSessionCard key={session.id} session={session} />
+              <ReviewSessionCard 
+                key={session.id} 
+                session={session} 
+                onSessionUpdated={onSessionsUpdate}
+              />
             ))}
           </div>
         </section>
@@ -42,7 +47,11 @@ const ReviewSessionList: React.FC<ReviewSessionListProps> = ({ sessions }) => {
           </div>
           <div className="grid gap-4">
             {groupedSessions.upcoming.map(session => (
-              <ReviewSessionCard key={session.id} session={session} />
+              <ReviewSessionCard 
+                key={session.id} 
+                session={session} 
+                onSessionUpdated={onSessionsUpdate}
+              />
             ))}
           </div>
         </section>

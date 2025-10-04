@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   ScheduledReview,
   UpcomingReviews,
-  ReviewSession 
+  ReviewSession,
+  UpcomingReviewItem
 } from '../src/types/reviews';
 import { API_URL } from "../src/config";
 
-const API_BASE = API_URL || "http://localhost:3000/api";  // REVISAR !!!!
+const API_BASE = API_URL || "http://localhost:3000/api";
 
 export const useReviews = () => {
   const [pendingReviews, setPendingReviews] = useState<ScheduledReview[]>([]);
@@ -14,9 +15,10 @@ export const useReviews = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAllReviews = async () => {
+  const fetchAllReviews = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       await Promise.all([
         fetchPendingReviews(),
         fetchUpcomingReviews(),
@@ -26,7 +28,7 @@ export const useReviews = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const fetchPendingReviews = async () => {
     try {
@@ -39,8 +41,9 @@ export const useReviews = () => {
       });
       if (!response.ok) throw new Error('Error de carga de revisiones de hoy');
       const data = await response.json();
-      setPendingReviews(data.pendingReviews);
+      setPendingReviews(data.pendingReviews || []);
     } catch (err) {
+      setPendingReviews([]);
       throw err;
     }
   };
@@ -56,8 +59,9 @@ export const useReviews = () => {
       });
       if (!response.ok) throw new Error('Error de carga de revisiones de los próximos días');
       const data = await response.json();
-      setUpcomingReviews(data.upcomingReviews);
+      setUpcomingReviews(data.upcomingReviews || {});
     } catch (err) {
+      setUpcomingReviews({});
       throw err;
     }
   };
@@ -101,15 +105,15 @@ export const useReviews = () => {
         },
         body: JSON.stringify({ newDate }),
       });
-  
-      if (!response.ok) throw new Error('Error reprogramando la revisión');
-  
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error reprogramando la revisión: ${errorText}`);
+      }
+
       const result = await response.json();
       
-      await Promise.all([
-        fetchPendingReviews(),
-        fetchUpcomingReviews(),
-      ]);
+      await fetchAllReviews();
       
       return result;
     } catch (err) {
@@ -121,42 +125,46 @@ export const useReviews = () => {
   const getGroupedSessions = (): ReviewSession[] => {
     const sessions: ReviewSession[] = [];
 
-    // Pendientes
-    pendingReviews.forEach(review => {
-      sessions.push({
-        id: review.id,
-        type: 'pending',
-        dueDate: review.dueDate,
-        card: review.card,
-        intervalDays: review.intervalDays
+    if (Array.isArray(pendingReviews)) {
+      pendingReviews.forEach(review => {
+        sessions.push({
+          id: review.id,
+          type: 'pending',
+          dueDate: review.dueDate,
+          card: review.card,
+          intervalDays: review.intervalDays
+        });
       });
-    });
+    }
 
-    // Próximas
-    Object.values(upcomingReviews).flat().forEach(review => {
-      sessions.push({
-        id: review.id,
-        type: 'upcoming',
-        dueDate: review.dueDate,
-        card: review.card,
+    if (upcomingReviews && typeof upcomingReviews === 'object') {
+      Object.values(upcomingReviews).forEach(dateGroup => {
+        if (Array.isArray(dateGroup)) {
+          dateGroup.forEach((review: UpcomingReviewItem) => {
+            sessions.push({
+              id: review.id,
+              type: 'upcoming',
+              dueDate: review.dueDate,
+              card: review.card,
+              intervalDays: review.intervalDays
+            });
+          });
+        }
       });
-    });
+    }
 
     return sessions.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   };
 
   useEffect(() => {
     fetchAllReviews();
-  }, []);
+  }, [fetchAllReviews]);
 
   return {
-    // Estado
     pendingReviews,
     upcomingReviews,
     loading,
     error,
-    
-    // Métodos
     fetchAllReviews,
     fetchPendingReviews,
     fetchUpcomingReviews,

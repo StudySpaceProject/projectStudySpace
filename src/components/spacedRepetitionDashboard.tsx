@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useReviews } from '../../hooks/useReviews';
 import ReviewSessionList from './reviewSessionList';
 import StudySession from './studySession';
@@ -12,10 +12,23 @@ const SpacedRepetitionDashboard: React.FC = () => {
     error,
     completeReview,
     getGroupedSessions,
+    fetchAllReviews,
   } = useReviews();
 
   const [currentSession, setCurrentSession] = useState<number>(0);
   const [showStudySession, setShowStudySession] = useState(false);
+
+  const upcomingCount = useMemo(() => {
+    if (!upcomingReviews || typeof upcomingReviews !== 'object') return 0;
+    
+    return Object.values(upcomingReviews).reduce((total, dateGroup) => {
+      return total + (Array.isArray(dateGroup) ? dateGroup.length : 0);
+    }, 0);
+  }, [upcomingReviews]);
+
+  const handleSessionsUpdate = useCallback(() => {
+    fetchAllReviews();
+  }, [fetchAllReviews]);
 
   const startStudySession = () => {
     if (pendingReviews.length > 0) {
@@ -83,7 +96,6 @@ const SpacedRepetitionDashboard: React.FC = () => {
   }
 
   const groupedSessions = getGroupedSessions();
-  const upcomingCount = Object.values(upcomingReviews).flat().length;
 
   return (
     <div className="space-y-6">
@@ -144,7 +156,7 @@ const SpacedRepetitionDashboard: React.FC = () => {
               <div>
                 <p className="text-gray-600 text-sm mb-1">Total Programadas</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {groupedSessions.length}
+                  {pendingReviews.length + upcomingCount}
                 </p>
               </div>
             </div>
@@ -152,7 +164,10 @@ const SpacedRepetitionDashboard: React.FC = () => {
         </div>
       </div>
 
-      <ReviewSessionList sessions={groupedSessions} />
+      <ReviewSessionList 
+        sessions={groupedSessions} 
+        onSessionsUpdate={handleSessionsUpdate}
+      />
     </div>
   );
 };

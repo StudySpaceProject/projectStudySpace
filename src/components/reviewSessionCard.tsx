@@ -7,9 +7,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 interface ReviewSessionCardProps {
   session: ReviewSession;
+  onSessionUpdated?: () => void;
 }
 
-const ReviewSessionCard: React.FC<ReviewSessionCardProps> = ({ session }) => {
+const ReviewSessionCard: React.FC<ReviewSessionCardProps> = ({ session, onSessionUpdated }) => {
   const { rescheduleReview } = useReviews();
   const [currentSession, setCurrentSession] = useState(session);
   const [showReschedule, setShowReschedule] = useState(false);
@@ -116,6 +117,11 @@ const ReviewSessionCard: React.FC<ReviewSessionCardProps> = ({ session }) => {
       }));
       
       setShowReschedule(false);
+      
+      if (onSessionUpdated) {
+        onSessionUpdated();
+      }
+      
     } catch (error) {
       console.error('Error reprogramando:', error);
     } finally {
