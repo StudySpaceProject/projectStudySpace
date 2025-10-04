@@ -101,12 +101,15 @@ export const useReviews = () => {
         },
         body: JSON.stringify({ newDate }),
       });
-
+  
       if (!response.ok) throw new Error('Error reprogramando la revisión');
-
+  
       const result = await response.json();
       
-      await fetchAllReviews();
+      await Promise.all([
+        fetchPendingReviews(),
+        fetchUpcomingReviews(),
+      ]);
       
       return result;
     } catch (err) {
