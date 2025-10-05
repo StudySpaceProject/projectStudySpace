@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   Home,
+  GraduationCap,
 } from "lucide-react";
 import { GoogleCalendarAuth } from "./googleCalendarAuth";
 import { useAuth } from "../context/AuthContext";
@@ -56,7 +57,8 @@ const Layout = () => {
   const navLinks = [
     { to: "/topics", icon: Home, label: "Dashboard" },
     { to: "/topics", icon: BookOpen, label: "Mis Temas" },
-    { to: "/study-sections", icon: FileText, label: "Sesiones de Estudio" },
+    { to: "/study-sections", icon: FileText, label: "Buscar Tarjetas" },
+    { to: "/study-sessions", icon: GraduationCap, label: "Sesiones de Repaso" },
     { to: "/calendar", icon: Calendar, label: "Calendario" },
     { to: "/progress", icon: TrendingUp, label: "Progreso" },
     { to: "/community", icon: Users, label: "Comunidad" },
