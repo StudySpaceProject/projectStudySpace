@@ -10,9 +10,11 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Temas from "./pages/Temas";
+import Register from "./pages/Register";
 import StudySections from "./pages/StudySections";
+import StudySessions from "./pages/StudySessions";
+import CalendarPage from "./pages/CalendarPage";
 import Layout from "./components/layout";
 
 const theme = createTheme({
@@ -38,18 +40,19 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<Landing />} />
       <Route
         path="/login"
-        element={isAuthenticated ? <Navigate to="/topics" /> : <Login />}
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />}
       />
       <Route
         path="/register"
-        element={isAuthenticated ? <Navigate to="/topics" /> : <Register />}
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />}
       />
-
-      {/* Rutas privadas con Layout */}
+      {/* Rutas protegidas */}
       {isAuthenticated && (
         <Route element={<Layout />}>
           <Route path="/topics" element={<Temas />} />
           <Route path="/study-sections" element={<StudySections />} />
+          <Route path="/study-sessions" element={<StudySessions />} />
+          <Route path="/calendar" element={<CalendarPage />} />
         </Route>
       )}
 
