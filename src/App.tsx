@@ -10,11 +10,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import Temas from "./pages/Temas";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
 import StudySections from "./pages/StudySections";
 import StudySessions from "./pages/StudySessions";
 import CalendarPage from "./pages/CalendarPage";
+import Layout from "./components/layout";
 
 const theme = createTheme({
   palette: {
@@ -45,22 +46,20 @@ const AppRoutes: React.FC = () => {
         path="/register"
         element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />}
       />
-      <Route
-        path="/dashboard"
-        element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
-      />
-      <Route
-        path="/study-sections"
-        element={isAuthenticated ? <StudySections /> : <Navigate to="/login" />}
-      />
-      <Route
-        path="/study-sessions"
-        element={isAuthenticated ? <StudySessions /> : <Navigate to="/login" />}
-      />
-      <Route
-        path="/calendar"
-        element={isAuthenticated ? <CalendarPage /> : <Navigate to="/login" />}
-      />
+      {/* Rutas protegidas */}
+      {isAuthenticated && (
+        <Route element={<Layout />}>
+          <Route path="/topics" element={<Temas />} />
+          <Route path="/study-sections" element={<StudySections />} />
+          <Route path="/study-sessions" element={<StudySessions />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+        </Route>
+      )}
+
+      {/* Redirigir a login si no está autenticado */}
+      {!isAuthenticated && (
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      )}
     </Routes>
   );
 };
