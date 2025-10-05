@@ -52,3 +52,18 @@ export interface GroupedSessions {
   upcoming: ReviewSession[];
   completed: ReviewSession[];
 }
+
+export interface StudySessionCalendar {
+  id: number;
+  dueDate: string;
+  card: {
+    id: number;
+    question: string;
+    topic: {
+      id: number;
+      name: string;
+      color: string;
+    };
+  };
+  intervalDays?: number;
+}

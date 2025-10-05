@@ -9,6 +9,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import StudySections from './pages/StudySections';
 import StudySessions from './pages/StudySessions';
+import CalendarPage from './pages/CalendarPage';
+
 
 const theme = createTheme({
   palette: {
@@ -26,6 +28,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
       <Route path="/study-sections" element={isAuthenticated ? <StudySections /> : <Navigate to="/login" />} />
       <Route path="/study-sessions" element={isAuthenticated ? <StudySessions /> : <Navigate to="/login" />} />
+      <Route path="/calendar" element={isAuthenticated ? <CalendarPage /> : <Navigate to="/login" />} />
     </Routes>
   );
 };
