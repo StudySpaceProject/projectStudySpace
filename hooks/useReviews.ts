@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   ScheduledReview,
   UpcomingReviews,
@@ -12,6 +12,7 @@ const API_BASE = API_URL || "http://localhost:3000/api";
 export const useReviews = () => {
   const [pendingReviews, setPendingReviews] = useState<ScheduledReview[]>([]);
   const [upcomingReviews, setUpcomingReviews] = useState<UpcomingReviews>({});
+  const [allUpcomingReviews, setAllUpcomingReviews] = useState<UpcomingReviews>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +22,8 @@ export const useReviews = () => {
       setError(null);
       await Promise.all([
         fetchPendingReviews(),
-        fetchUpcomingReviews(),
+        fetchUpcomingReviews(7),
+        fetchAllUpcomingReviews(),
       ]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error de carga de revisiones');
@@ -62,6 +64,24 @@ export const useReviews = () => {
       setUpcomingReviews(data.upcomingReviews || {});
     } catch (err) {
       setUpcomingReviews({});
+      throw err;
+    }
+  };
+
+  const fetchAllUpcomingReviews = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/reviews/upcoming?days=30`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) throw new Error('Error de carga de todas las revisiones futuras');
+      const data = await response.json();
+      setAllUpcomingReviews(data.upcomingReviews || {});
+    } catch (err) {
+      setAllUpcomingReviews({});
       throw err;
     }
   };
@@ -137,8 +157,8 @@ export const useReviews = () => {
       });
     }
 
-    if (upcomingReviews && typeof upcomingReviews === 'object') {
-      Object.values(upcomingReviews).forEach(dateGroup => {
+    if (allUpcomingReviews && typeof allUpcomingReviews === 'object') {
+      Object.values(allUpcomingReviews).forEach(dateGroup => {
         if (Array.isArray(dateGroup)) {
           dateGroup.forEach((review: UpcomingReviewItem) => {
             sessions.push({
@@ -156,6 +176,20 @@ export const useReviews = () => {
     return sessions.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   };
 
+  const upcoming7DaysCount = useMemo(() => {
+    if (!upcomingReviews || typeof upcomingReviews !== 'object') return 0;
+    return Object.values(upcomingReviews).reduce((total, dateGroup) => {
+      return total + (Array.isArray(dateGroup) ? dateGroup.length : 0);
+    }, 0);
+  }, [upcomingReviews]);
+
+  const totalUpcomingCount = useMemo(() => {
+    if (!allUpcomingReviews || typeof allUpcomingReviews !== 'object') return 0;
+    return Object.values(allUpcomingReviews).reduce((total, dateGroup) => {
+      return total + (Array.isArray(dateGroup) ? dateGroup.length : 0);
+    }, 0);
+  }, [allUpcomingReviews]);
+
   useEffect(() => {
     fetchAllReviews();
   }, [fetchAllReviews]);
@@ -163,11 +197,15 @@ export const useReviews = () => {
   return {
     pendingReviews,
     upcomingReviews,
+    allUpcomingReviews,
+    upcoming7DaysCount,
+    totalUpcomingCount,
     loading,
     error,
     fetchAllReviews,
     fetchPendingReviews,
     fetchUpcomingReviews,
+    fetchAllUpcomingReviews,
     completeReview,
     rescheduleReview,
     getGroupedSessions,
