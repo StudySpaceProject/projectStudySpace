@@ -11,9 +11,10 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Temas from "./pages/Temas";
+import Dashboard from "./pages/Dashboard";
 import StudySections from "./pages/StudySections";
-import Layout from "./components/layout";
+import StudySessions from "./pages/StudySessions";
+import CalendarPage from "./pages/CalendarPage";
 
 const theme = createTheme({
   palette: {
@@ -38,25 +39,28 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<Landing />} />
       <Route
         path="/login"
-        element={isAuthenticated ? <Navigate to="/topics" /> : <Login />}
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />}
       />
       <Route
         path="/register"
-        element={isAuthenticated ? <Navigate to="/topics" /> : <Register />}
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />}
       />
-
-      {/* Rutas privadas con Layout */}
-      {isAuthenticated && (
-        <Route element={<Layout />}>
-          <Route path="/topics" element={<Temas />} />
-          <Route path="/study-sections" element={<StudySections />} />
-        </Route>
-      )}
-
-      {/* Redirigir a login si no está autenticado */}
-      {!isAuthenticated && (
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      )}
+      <Route
+        path="/dashboard"
+        element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/study-sections"
+        element={isAuthenticated ? <StudySections /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/study-sessions"
+        element={isAuthenticated ? <StudySessions /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/calendar"
+        element={isAuthenticated ? <CalendarPage /> : <Navigate to="/login" />}
+      />
     </Routes>
   );
 };
