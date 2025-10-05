@@ -55,9 +55,7 @@ const Layout = () => {
   };
 
   const navLinks = [
-    { to: "/topics", icon: Home, label: "Dashboard" },
     { to: "/topics", icon: BookOpen, label: "Mis Temas" },
-    { to: "/study-sections", icon: FileText, label: "Buscar Tarjetas" },
     { to: "/study-sessions", icon: GraduationCap, label: "Sesiones de Repaso" },
     { to: "/calendar", icon: Calendar, label: "Calendario" },
     { to: "/progress", icon: TrendingUp, label: "Progreso" },
