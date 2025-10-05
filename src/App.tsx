@@ -12,7 +12,6 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Temas from "./pages/Temas";
 import Register from "./pages/Register";
-import StudySections from "./pages/StudySections";
 import StudySessions from "./pages/StudySessions";
 import CalendarPage from "./pages/CalendarPage";
 import Layout from "./components/layout";
@@ -40,18 +39,18 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<Landing />} />
       <Route
         path="/login"
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />}
+        element={isAuthenticated ? <Navigate to="/topics" /> : <Login />}  // Corregido cambio de URL
       />
       <Route
         path="/register"
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />}
+        element={isAuthenticated ? <Navigate to="/topics" /> : <Register />}  // Corregido cambio de URL
       />
-      {/* Rutas protegidas */}
+      
+      {/* Rutas protegidas */}  {/* ELIMINADO !!!! study-sections por duplicado (el usado: /study-sessions) */}
       {isAuthenticated && (
         <Route element={<Layout />}>
           <Route path="/topics" element={<Temas />} />
-          <Route path="/study-sections" element={<StudySections />} />
-          <Route path="/study-sessions" element={<StudySessions />} />
+          <Route path="/study-sessions" element={<StudySessions />} />  
           <Route path="/calendar" element={<CalendarPage />} />
         </Route>
       )}
