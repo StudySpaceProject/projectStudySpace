@@ -55,10 +55,8 @@ const Layout = () => {
   };
 
   const navLinks = [
-    { to: "/topics", icon: Home, label: "Dashboard" },
-    { to: "/topics", icon: BookOpen, label: "Mis Temas" },
-    { to: "/study-sections", icon: FileText, label: "Buscar Tarjetas" },
-    { to: "/study-sessions", icon: GraduationCap, label: "Sesiones de Repaso" },
+    { to: "/topics", icon: BookOpen, label: "Mis temas" },
+    { to: "/study-sessions", icon: GraduationCap, label: "Sesiones de repaso" },
     { to: "/calendar", icon: Calendar, label: "Calendario" },
     { to: "/progress", icon: TrendingUp, label: "Progreso" },
     { to: "/community", icon: Users, label: "Comunidad" },
@@ -78,14 +76,14 @@ const Layout = () => {
             >
               <Menu size={24} />
             </button>
-            <div className="flex items-center gap-2">
+            <Link to="/topics" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
                 <Brain size={18} className="text-white" />
               </div>
               <h1 className="text-lg font-bold bg-gradient-to-br from-indigo-500 to-purple-600 bg-clip-text text-transparent">
                 Study Space
               </h1>
-            </div>
+            </Link>
           </div>
           <button className="relative p-2 text-gray-600 rounded-xl transition-colors hover:bg-gray-100">
             <Bell size={20} />
@@ -111,14 +109,18 @@ const Layout = () => {
         <div className="flex flex-col h-full">
           {/* Header del menú */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <div className="flex items-center gap-3">
+            <Link 
+              to="/topics" 
+              className="flex items-center gap-3"
+              onClick={handleLinkClick}
+            >
               <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
                 <Brain size={24} className="text-white" />
               </div>
               <h1 className="text-xl font-bold bg-gradient-to-br from-indigo-500 to-purple-600 bg-clip-text text-transparent">
                 Study Space
               </h1>
-            </div>
+            </Link>
             <button
               className="p-2 text-gray-600 rounded-xl transition-colors hover:bg-gray-100 active:scale-95"
               onClick={() => setIsMenuOpen(false)}
@@ -189,12 +191,14 @@ const Layout = () => {
         <div className="flex flex-col h-full">
           {/* Header del sidebar */}
           <div className="flex items-center gap-3 p-6 border-b border-gray-200 flex-shrink-0">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
-              <Brain size={24} className="text-white" />
-            </div>
-            <h1 className="text-xl font-bold bg-gradient-to-br from-indigo-500 to-purple-600 bg-clip-text text-transparent">
-              Study Space
-            </h1>
+            <Link to="/topics" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
+                <Brain size={24} className="text-white" />
+              </div>
+              <h1 className="text-xl font-bold bg-gradient-to-br from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+                Study Space
+              </h1>
+            </Link>
           </div>
 
           {/* Navigation */}

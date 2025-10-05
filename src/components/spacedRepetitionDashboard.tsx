@@ -7,7 +7,8 @@ import { BookOpen, Clock, TrendingUp, Play } from 'lucide-react';
 const SpacedRepetitionDashboard: React.FC = () => {
   const {
     pendingReviews,
-    upcomingReviews,
+    upcoming7DaysCount,
+    totalUpcomingCount,
     loading,
     error,
     completeReview,
@@ -17,14 +18,6 @@ const SpacedRepetitionDashboard: React.FC = () => {
 
   const [currentSession, setCurrentSession] = useState<number>(0);
   const [showStudySession, setShowStudySession] = useState(false);
-
-  const upcomingCount = useMemo(() => {
-    if (!upcomingReviews || typeof upcomingReviews !== 'object') return 0;
-    
-    return Object.values(upcomingReviews).reduce((total, dateGroup) => {
-      return total + (Array.isArray(dateGroup) ? dateGroup.length : 0);
-    }, 0);
-  }, [upcomingReviews]);
 
   const handleSessionsUpdate = useCallback(() => {
     fetchAllReviews();
@@ -102,7 +95,7 @@ const SpacedRepetitionDashboard: React.FC = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Sesiones de Repaso</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Sesiones de repaso</h1>
             <p className="text-gray-600">
               Sistema de repaso espaciado para optimizar tu aprendizaje
             </p>
@@ -114,7 +107,7 @@ const SpacedRepetitionDashboard: React.FC = () => {
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
             >
               <Play size={20} />
-              Iniciar Sesión ({pendingReviews.length})
+              Iniciar repaso ({pendingReviews.length})
             </button>
           )}
         </div>
@@ -126,7 +119,7 @@ const SpacedRepetitionDashboard: React.FC = () => {
                 <Clock size={24} className="text-red-600" />
               </div>
               <div>
-                <p className="text-gray-600 text-sm mb-1">Pendientes Hoy</p>
+                <p className="text-gray-600 text-sm mb-1">Pendientes hoy</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {pendingReviews.length}
                 </p>
@@ -142,7 +135,7 @@ const SpacedRepetitionDashboard: React.FC = () => {
               <div>
                 <p className="text-gray-600 text-sm mb-1">Próximos 7 días</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {upcomingCount}
+                  {upcoming7DaysCount}
                 </p>
               </div>
             </div>
@@ -154,9 +147,9 @@ const SpacedRepetitionDashboard: React.FC = () => {
                 <TrendingUp size={24} className="text-purple-600" />
               </div>
               <div>
-                <p className="text-gray-600 text-sm mb-1">Total Programadas</p>
+                <p className="text-gray-600 text-sm mb-1">Próximos 30 días</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {pendingReviews.length + upcomingCount}
+                  {pendingReviews.length + totalUpcomingCount}
                 </p>
               </div>
             </div>
