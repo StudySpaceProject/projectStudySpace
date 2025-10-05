@@ -144,7 +144,7 @@ const Layout = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4">
+          <nav className="flex-1 p-4">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => {
                 const Icon = link.icon;
@@ -185,10 +185,10 @@ const Layout = () => {
       </div>
 
       {/* Sidebar Desktop - Static */}
-      <div className="hidden lg:block lg:fixed lg:top-0 lg:left-0 lg:bottom-0 lg:w-64 bg-white border-r border-gray-200 shadow-sm">
+      <div className="hidden lg:block lg:fixed lg:top-0 lg:left-0 lg:bottom-0 lg:w-64 bg-white border-r border-gray-200 shadow-sm overflow-hidden">
         <div className="flex flex-col h-full">
           {/* Header del sidebar */}
-          <div className="flex items-center gap-3 p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3 p-6 border-b border-gray-200 flex-shrink-0">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
               <Brain size={24} className="text-white" />
             </div>
@@ -198,14 +198,14 @@ const Layout = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 flex flex-col gap-2">
+          <nav className="flex-1 p-4 flex flex-col gap-2 overflow-hidden">
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (
                 <Link
                   key={link.label}
                   to={link.to}
-                  className="flex items-center gap-3 p-3 rounded-xl text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600 transition-colors"
+                  className="flex items-center gap-2.5 p-3 py-2.5 rounded-lg text-gray-600 font-medium hover:bg-gray-100 hover:text-indigo-600 transition-colors flex-shrink-0"
                 >
                   <Icon size={20} />
                   {link.label}
@@ -215,10 +215,10 @@ const Layout = () => {
           </nav>
 
           {/* Logout button at bottom */}
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-gray-200 flex-shrink-0">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 p-3 rounded-xl text-red-600 font-medium hover:bg-red-50 transition-colors"
+              className="w-full flex items-center gap-2.5 p-3 py-2.5 rounded-lg text-red-600 text-sm font-medium hover:bg-red-50 transition-colors"
             >
               <LogOut size={20} />
               Cerrar sesión
@@ -245,7 +245,8 @@ const Layout = () => {
         <div className="p-4 lg:p-8">
           {/* Welcome message mobile */}
           <div className="lg:hidden mb-6 bg-white rounded-xl shadow-sm p-4">
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="text-sm font-bold text-gray-900">
+              {/* <h2 className="text-sm font-bold text-gray-900"> */}
               ¡Bienvenido de vuelta! 👋
             </h2>
             <p className="text-sm text-gray-600 mt-1">
