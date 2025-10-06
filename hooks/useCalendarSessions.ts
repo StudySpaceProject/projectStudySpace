@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { StudySessionCalendar } from '../src/types/reviews';
 import { API_URL } from "../src/config";
+import { reviewsUpdateEvent } from './reviewsUpdateEvent';
 
 const API_BASE = API_URL || "http://localhost:3000/api";
 
 export const useCalendarSessions = () => {
   const [sessions, setSessions] = useState<StudySessionCalendar[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const fetchCalendarSessions = useCallback(async (days: number = 30) => {
     try {
@@ -56,12 +58,31 @@ export const useCalendarSessions = () => {
     }
   }, []);
 
+  const refreshSessions = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
   useEffect(() => {
     fetchCalendarSessions();
-  }, [fetchCalendarSessions]);
+  }, [fetchCalendarSessions, refreshTrigger]);
+
+  // Para la actualización del widget del calendario sin refresh
+  useEffect(() => {
+    const handleReviewsUpdate = () => {
+      refreshSessions();
+    };
+
+    // ESCUCHADOR del evento
+    reviewsUpdateEvent.addListener(handleReviewsUpdate);
+    
+    return () => {
+      reviewsUpdateEvent.removeListener(handleReviewsUpdate);
+    };
+  }, [refreshSessions]);
 
   return {
     sessions,
-    loading
+    loading,
+    refreshSessions
   };
 };
