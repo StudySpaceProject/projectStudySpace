@@ -54,7 +54,7 @@ export const useCards = () => {
     try {
       const token = getToken();
       const response = await fetch(
-        `${API_BASE_URL}/cards/search/${user.id}?search=${encodeURIComponent(
+        `${API_BASE_URL}/cards/search?search=${encodeURIComponent(
           searchTerm
         )}`,
         {
@@ -162,6 +162,10 @@ export const useCards = () => {
     }
   };
 
+  const clearCards = () => {
+    setCards([]);
+  };
+
   return {
     cards,
     loading,
@@ -171,5 +175,6 @@ export const useCards = () => {
     addCard,
     updateCard,
     deleteCard,
+    clearCards,
   };
 };
