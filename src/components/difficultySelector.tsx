@@ -11,50 +11,61 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   onSelect,
 }) => {
   const difficulties = [
-    { 
-      level: 1, 
-      label: 'Fácil', 
+    {
+      level: 1,
+      label: 'Fácil',
       icon: Smile,
       bgColor: 'bg-green-500 hover:bg-green-600',
       borderColor: 'border-green-200',
-      description: 'Lo recordé fácilmente' 
+      description: 'Lo recordé fácilmente',
     },
-    { 
-      level: 2, 
-      label: 'Medio', 
+    {
+      level: 2,
+      label: 'Medio',
       icon: Meh,
-      bgColor: 'bg-orange-500 hover:bg-orange-600', 
+      bgColor: 'bg-orange-500 hover:bg-orange-600',
       borderColor: 'border-orange-200',
-      description: 'Me costó un poco' 
+      description: 'Me costó un poco',
     },
-    { 
-      level: 3, 
-      label: 'Difícil', 
+    {
+      level: 3,
+      label: 'Difícil',
       icon: Frown,
-      bgColor: 'bg-red-500 hover:bg-red-600', 
+      bgColor: 'bg-red-500 hover:bg-red-600',
       borderColor: 'border-red-200',
-      description: 'No lo recordé bien' 
+      description: 'No lo recordé bien',
     },
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900 text-center px-2">
+    <div className="w-full px-1 sm:px-2 py-2 flex flex-col items-center justify-center">
+      <h3 className="text-center text-gray-900 font-semibold text-sm xs:text-base sm:text-lg mb-3 xs:mb-4 leading-tight px-1">
         ¿Qué tan bien recordaste esto?
       </h3>
-      
-      <div className="flex flex-col sm:grid sm:grid-cols-3 gap-3 sm:gap-4 w-full">
+
+      <div className="flex flex-col xs:flex-row justify-center items-stretch gap-1.5 xs:gap-2 sm:gap-3 w-full max-w-xs xs:max-w-none mx-auto">
         {difficulties.map(({ level, label, icon: Icon, bgColor, borderColor, description }) => (
           <button
             key={level}
             onClick={() => onSelect(level as 1 | 2 | 3)}
             disabled={selectedDifficulty !== null}
-            className={`w-full p-3 sm:p-4 rounded-xl text-white font-semibold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed border-2 ${bgColor} ${borderColor} shadow-lg hover:shadow-xl min-h-[120px] sm:min-h-0`}
+            className={`
+              flex-1 flex flex-col items-center justify-center text-center
+              min-w-0 min-h-[70px] xs:min-h-[80px] sm:min-h-[90px] md:min-h-[100px]
+              rounded-lg text-white font-semibold border
+              ${bgColor} ${borderColor}
+              shadow-sm hover:shadow-md transition-all duration-200 
+              hover:scale-105 active:scale-95
+              disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none
+              px-1.5 py-2 xs:px-2 xs:py-2.5 sm:px-3 sm:py-3
+            `}
           >
-            <div className="flex flex-col items-center gap-1 sm:gap-2">
-              <Icon size={28} className="text-white sm:w-8 sm:h-8" />
-              <div className="text-base sm:text-lg font-medium">{label}</div>
-              <div className="text-xs sm:text-sm opacity-90 text-center leading-tight sm:leading-normal px-1">
+            <div className="flex flex-col items-center justify-center gap-0.5 xs:gap-1 sm:gap-1.5 w-full">
+              <Icon className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 text-white flex-shrink-0" />
+              <div className="text-xs font-medium leading-tight whitespace-nowrap truncate w-full px-0.5">
+                {label}
+              </div>
+              <div className="text-[10px] xs:text-xs leading-tight line-clamp-2 max-h-[2.4em] overflow-hidden px-0.5">
                 {description}
               </div>
             </div>
