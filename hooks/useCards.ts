@@ -54,9 +54,7 @@ export const useCards = () => {
     try {
       const token = getToken();
       const response = await fetch(
-        `${API_BASE_URL}/cards/search?search=${encodeURIComponent(
-          searchTerm
-        )}`,
+        `${API_BASE_URL}/cards/search?search=${encodeURIComponent(searchTerm)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -85,13 +83,14 @@ export const useCards = () => {
     setError(null);
     try {
       const token = getToken();
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const response = await fetch(`${API_BASE_URL}/cards`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(cardData),
+        body: JSON.stringify({ ...cardData, timezone }),
       });
 
       if (!response.ok) throw new Error("Error al crear tarjeta");
