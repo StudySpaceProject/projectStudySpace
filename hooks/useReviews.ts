@@ -6,6 +6,7 @@ import {
   UpcomingReviewItem
 } from '../src/types/reviews';
 import { API_URL } from "../src/config";
+import { reviewsUpdateEvent } from './reviewsUpdateEvent';
 
 const API_BASE = API_URL || "http://localhost:3000/api";
 
@@ -107,6 +108,10 @@ export const useReviews = () => {
       
       await fetchAllReviews();
       
+      // Evento global de reviewsUpdateEvent - unión de hooks
+      // para sincronización del widget del calendario (sin refresh)
+      reviewsUpdateEvent.notify();
+      
       return result;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al completar la revisión');
@@ -134,6 +139,10 @@ export const useReviews = () => {
       const result = await response.json();
       
       await fetchAllReviews();
+      
+      // Evento global de reviewsUpdateEvent - unión de hooks
+      // para sincronización del widget del calendario (sin refresh)
+      reviewsUpdateEvent.notify();
       
       return result;
     } catch (err) {
