@@ -3,7 +3,6 @@ import {
   Bell,
   Brain,
   BookOpen,
-  FileText,
   Calendar,
   TrendingUp,
   Users,
@@ -11,7 +10,6 @@ import {
   LogOut,
   Menu,
   X,
-  Home,
   GraduationCap,
 } from "lucide-react";
 import { GoogleCalendarAuth } from "./googleCalendarAuth";
@@ -109,8 +107,8 @@ const Layout = () => {
         <div className="flex flex-col h-full">
           {/* Header del menú */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <Link 
-              to="/topics" 
+            <Link
+              to="/topics"
               className="flex items-center gap-3"
               onClick={handleLinkClick}
             >

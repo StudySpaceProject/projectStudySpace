@@ -3,7 +3,9 @@
   "version": "0.2.0",
   "description": "A sample package.json",
   "scripts": {
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "build": "parcel build index.html --public-url ./",
+    "dev": "parcel index.html"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
