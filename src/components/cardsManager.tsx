@@ -8,13 +8,47 @@ import { CardsManagerProps } from '../types/cards';
 export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | undefined>();
-  const { cards, loading, error, fetchCardsByTopic, addCard, updateCard, deleteCard } = useCards();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const { cards, loading, error, fetchCardsByTopic, searchCards, addCard, updateCard, deleteCard, clearCards } = useCards();
 
   useEffect(() => {
     if (topicId) {
+      setSearchTerm('');
       fetchCardsByTopic(topicId).catch(error => console.error('Error fetching cards:', error));
     }
   }, [topicId]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const performSearch = async () => {
+      const trimmedTerm = debouncedTerm.trim();
+      if (trimmedTerm === '') {
+        try {
+          await fetchCardsByTopic(topicId);
+        } catch (error) {
+          console.error('Error fetching cards:', error);
+        }
+      } else if (trimmedTerm.length >= 2) {
+        try {
+          await searchCards(trimmedTerm);
+        } catch (error) {
+          console.error('Error searching cards:', error);
+        }
+      } else {
+        clearCards();
+      }
+    };
+    if (topicId) {
+      performSearch();
+    }
+  }, [debouncedTerm, topicId]);
 
   const handleCreateCard = () => {
     setEditingCard(undefined);
@@ -58,10 +92,19 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center gap-4 mb-4">
         <h2 className="text-xl font-bold text-gray-900">Tarjetas de Estudio</h2>
         {!showForm && (
-          <button onClick={handleCreateCard} className="bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+          <input
+            type="text"
+            placeholder="Buscar preguntas y respuestas..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        )}
+        {!showForm && (
+          <button onClick={handleCreateCard} className="bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded-lg transition-colors whitespace-nowrap">
             + Nueva Tarjeta
           </button>
         )}
