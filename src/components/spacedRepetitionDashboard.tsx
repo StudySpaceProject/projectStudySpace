@@ -92,11 +92,11 @@ const SpacedRepetitionDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Sesiones de repaso</h1>
-            <p className="text-gray-600">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Sesiones de repaso</h1>
+            <p className="text-gray-600 text-sm sm:text-base">
               Sistema de repaso espaciado para optimizar tu aprendizaje
             </p>
           </div>
@@ -104,51 +104,52 @@ const SpacedRepetitionDashboard: React.FC = () => {
           {pendingReviews.length > 0 && (
             <button
               onClick={startStudySession}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
+              className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl w-full sm:w-auto justify-center"
             >
               <Play size={20} />
-              Iniciar repaso ({pendingReviews.length})
+              <span className="sm:hidden">Iniciar ({pendingReviews.length})</span>
+              <span className="hidden sm:inline">Iniciar repaso ({pendingReviews.length})</span>
             </button>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-red-100">
-                <Clock size={24} className="text-red-600" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-red-100">
+                <Clock size={20} className="sm:w-6 sm:h-6 text-red-600" />
               </div>
               <div>
-                <p className="text-gray-600 text-sm mb-1">Pendientes hoy</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-gray-600 text-xs sm:text-sm mb-1">Pendientes hoy</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {pendingReviews.length}
                 </p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-orange-100">
-                <BookOpen size={24} className="text-orange-600" />
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-orange-100">
+                <BookOpen size={20} className="sm:w-6 sm:h-6 text-orange-600" />
               </div>
               <div>
-                <p className="text-gray-600 text-sm mb-1">Próximos 7 días</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-gray-600 text-xs sm:text-sm mb-1">Próximos 7 días</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {upcoming7DaysCount}
                 </p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-100">
-                <TrendingUp size={24} className="text-purple-600" />
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-purple-100">
+                <TrendingUp size={20} className="sm:w-6 sm:h-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-gray-600 text-sm mb-1">Próximos 30 días</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-gray-600 text-xs sm:text-sm mb-1">Próximos 30 días</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {pendingReviews.length + totalUpcomingCount}
                 </p>
               </div>
