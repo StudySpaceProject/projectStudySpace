@@ -97,8 +97,6 @@ export const useCards = () => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error al crear tarjeta:", errorText);
         throw new Error("Error al crear tarjeta");
       }
 
