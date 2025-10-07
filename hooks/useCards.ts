@@ -84,6 +84,9 @@ export const useCards = () => {
     try {
       const token = getToken();
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      console.log("Enviando card con timezone:", timezone);
+      console.log("Datos completos:", { ...cardData, timezone });
       const response = await fetch(`${API_BASE_URL}/cards`, {
         method: "POST",
         headers: {
@@ -93,12 +96,17 @@ export const useCards = () => {
         body: JSON.stringify({ ...cardData, timezone }),
       });
 
-      if (!response.ok) throw new Error("Error al crear tarjeta");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error al crear tarjeta:", errorText);
+        throw new Error("Error al crear tarjeta");
+      }
 
       const newCard = await response.json();
       setCards((prev) => [...prev, newCard.card]);
       return newCard.card;
     } catch (err) {
+      console.error("Error al crear tarjeta:", err);
       setError(err instanceof Error ? err.message : "Error desconocido");
       throw err;
     } finally {
