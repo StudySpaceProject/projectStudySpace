@@ -92,7 +92,7 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
         <h2 className="text-xl font-bold text-gray-900">Tarjetas de Estudio</h2>
         {!showForm && (
           <input
@@ -100,7 +100,7 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
             placeholder="Buscar preguntas y respuestas..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full md:flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         )}
         {!showForm && (
