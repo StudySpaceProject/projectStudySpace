@@ -3,7 +3,7 @@ import { Card, CreateCardData, UpdateCardData } from "../src/types/cards";
 import { useAuth } from "../src/context/AuthContext";
 import { API_URL } from "../src/config";
 
-const API_BASE_URL = API_URL || "http://localhost:3000/api"; // añadir al .env ¿?
+const API_BASE_URL = API_URL || "http://localhost:3000/api";
 
 export const useCards = () => {
   const [cards, setCards] = useState<Card[]>([]);
@@ -84,6 +84,7 @@ export const useCards = () => {
     setError(null);
     try {
       const token = getToken();
+      console.log("Enviando solicitud para crear tarjeta:", cardData);
       const response = await fetch(`${API_BASE_URL}/cards`, {
         method: "POST",
         headers: {
@@ -93,7 +94,25 @@ export const useCards = () => {
         body: JSON.stringify(cardData),
       });
 
-      if (!response.ok) throw new Error("Error al crear tarjeta");
+      console.log(
+        "Respuesta del servidor:",
+        response.status,
+        response.statusText
+      );
+
+      // if (!response.ok) throw new Error("Error al crear tarjeta");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error del servidor:", errorText);
+        let errorMessage = "Error al crear tarjeta";
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
+      }
 
       const newCard = await response.json();
       setCards((prev) => [...prev, newCard.card]);
