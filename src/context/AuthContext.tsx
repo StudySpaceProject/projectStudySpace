@@ -26,6 +26,7 @@ export const useAuth = () => {
   return context;
 };
 
+//props
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -73,6 +74,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     checkSession();
   }, []);
+
+  //funcion para obtener token
 
   const getToken = (): string => {
     const token = localStorage.getItem("token");
