@@ -54,9 +54,7 @@ export const useCards = () => {
     try {
       const token = getToken();
       const response = await fetch(
-        `${API_BASE_URL}/cards/search?search=${encodeURIComponent(
-          searchTerm
-        )}`,
+        `${API_BASE_URL}/cards/search?search=${encodeURIComponent(searchTerm)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -78,6 +76,7 @@ export const useCards = () => {
     }
   };
 
+  // Función para agregar una nueva tarjeta
   const addCard = async (cardData: CreateCardData): Promise<Card> => {
     if (!user) throw new Error("Usuario no autenticado");
 
