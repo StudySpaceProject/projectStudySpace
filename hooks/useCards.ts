@@ -84,6 +84,9 @@ export const useCards = () => {
     setError(null);
     try {
       const token = getToken();
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      console.log("Enviando card con timezone:", timezone);
+      console.log("Datos completos:", { ...cardData, timezone });
       console.log("Enviando solicitud para crear tarjeta:", cardData);
       const response = await fetch(`${API_BASE_URL}/cards`, {
         method: "POST",
@@ -91,7 +94,7 @@ export const useCards = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(cardData),
+        body: JSON.stringify({ ...cardData, timezone }),
       });
 
       console.log(
