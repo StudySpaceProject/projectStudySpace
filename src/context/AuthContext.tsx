@@ -30,6 +30,18 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+//obtener timezone del usuario
+const getUserTimezone = (): string => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch (error) {
+    console.warn(
+      "No se pudo detectar timezone, usando America/Bogota por defecto"
+    );
+    return "America/Bogota";
+  }
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -94,6 +106,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await res.json();
       setUser(data.user);
       localStorage.setItem("token", data.token);
+      console.log("User timezone:", data.user.timezone);
+
       return true;
     } catch (error) {
       console.error(error);
@@ -107,11 +121,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     password: string
   ): Promise<boolean> => {
     try {
+      const timezone = getUserTimezone();
+      console.log("Registrando usuario con timezone:", timezone);
+
       const res = await fetch(`${API_URL}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, timezone }),
       });
 
       if (!res.ok) return false;
@@ -119,6 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await res.json();
       setUser(data.user);
       localStorage.setItem("token", data.token);
+      console.log("Usuario registrado con timezone:", data.user.timezone);
       return true;
     } catch (error) {
       console.error(error);
