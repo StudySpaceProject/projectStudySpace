@@ -119,9 +119,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (!res.ok) return false;
 
-      const data = await res.json();
-      setUser(data.user);
-      localStorage.setItem("token", data.token);
+      // Registration successful, but do not auto-login
       return true;
     } catch (error) {
       console.error(error);

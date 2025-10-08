@@ -32,7 +32,7 @@ const Register: React.FC = () => {
     const success = await register(name, email, password);
     if (success) {
       setSuccess('Cuenta creada exitosamente. Redirigiendo al login...');
-      setTimeout(() => navigate('/topics'), 2000);  // He cambiado esto para redirigir directamente a la app en lugar de a login
+      setTimeout(() => navigate('/login'), 2000);
     } else {
       setError('Error al crear la cuenta. El email ya puede estar registrado.');
     }
