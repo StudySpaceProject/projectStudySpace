@@ -14,7 +14,7 @@ const Dashboard = () => {
   const { getDashboard } = useAuth();
 
   const { progress, completedToday, scheduledForToday, loading } = 
-    useProgress(dashboardData?.dashboard?.stats);
+    useProgress(dashboardData?.stats);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -36,7 +36,7 @@ const Dashboard = () => {
             <div>
               <p className="text-gray-600 text-sm mb-1">Temas activos</p>
               <p className="text-3xl font-bold text-gray-900">
-                {dashboardData?.dashboard?.stats?.totalTopics}
+                {dashboardData?.stats?.totalTopics}
               </p>
             </div>
           </div>
@@ -49,7 +49,7 @@ const Dashboard = () => {
             <div>
               <p className="text-gray-600 text-sm mb-1">Tarjetas total</p>
               <p className="text-3xl font-bold text-gray-900">
-                {dashboardData?.dashboard?.stats?.totalCards}
+                {dashboardData?.stats?.totalCards}
               </p>
             </div>
           </div>
@@ -62,7 +62,7 @@ const Dashboard = () => {
             <div>
               <p className="text-gray-600 text-sm mb-1">Racha actual</p>
               <p className="text-3xl font-bold text-gray-900">
-                {dashboardData?.dashboard?.stats?.currentStreak || 0} días
+                {0} días
               </p>
             </div>
           </div>
@@ -89,7 +89,7 @@ const Dashboard = () => {
 <TopicsManager
   onSelectTopic={setSelectedTopicId}
   onTopicsChange={(updatedTopics) => setTopics(updatedTopics)}
-  selectedTopicId={selectedTopicId} // ✅ pasar el tema seleccionado
+  selectedTopicId={selectedTopicId}
 />
 
       {/* Cards Manager */}
