@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card } from '../types/cards';
+import { Card, CardsManagerProps } from '../types/cards';
 import { useCards } from '../../hooks/useCards';
 import { CardList } from './cardList';
 import { CardForm } from './cardForm';
-import { CardsManagerProps } from '../types/cards';
 
 export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
   const [showForm, setShowForm] = useState(false);

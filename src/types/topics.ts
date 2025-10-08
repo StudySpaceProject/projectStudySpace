@@ -3,7 +3,6 @@ export interface Topic {
   name: string;
   cards: number;
   lastStudied: string;
-  // Eliminamos difficulty porque ya no se guarda en la base de datos
   progress: number;
   createdAt: string;
   updatedAt: string;
@@ -34,4 +33,10 @@ export interface TopicListProps {
   onEdit: (topic: Topic) => void;
   onDelete: (topicId: number) => void;
   onViewCards?: (topicId: number) => void;  // para navegar a las tarjetas del tema
+}
+
+export interface TopicsManagerProps {
+  onSelectTopic?: (topicId: number | null) => void; 
+  onTopicsChange?: (topics: Topic[]) => void;
+  selectedTopicId?: number | null;
 }

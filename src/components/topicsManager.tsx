@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Topic, CreateTopicData, UpdateTopicData } from "../types/topics";
+import { Topic, CreateTopicData, UpdateTopicData, TopicsManagerProps } from "../types/topics";
 import { useTopics } from "../../hooks/useTopics";
 import { TopicList } from "./topicList";
 import { TopicForm } from "./topicForm";
-
-interface TopicsManagerProps {
-  onSelectTopic?: (topicId: number | null) => void; 
-  onTopicsChange?: (topics: Topic[]) => void;
-  selectedTopicId?: number | null;
-}
 
 export const TopicsManager: React.FC<TopicsManagerProps> = ({
   onSelectTopic,

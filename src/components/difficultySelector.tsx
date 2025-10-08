@@ -1,10 +1,6 @@
 import React from 'react';
 import { Smile, Meh, Frown } from 'lucide-react';
-
-interface DifficultySelectorProps {
-  selectedDifficulty: 1 | 2 | 3 | null;
-  onSelect: (difficulty: 1 | 2 | 3) => void;
-}
+import { DifficultySelectorProps } from '../types/difficultySelector'
 
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   selectedDifficulty,

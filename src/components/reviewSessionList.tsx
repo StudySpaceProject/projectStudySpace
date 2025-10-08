@@ -1,12 +1,7 @@
 import React from 'react';
-import { ReviewSession } from '../types/reviews';
+import { ReviewSession, ReviewSessionListProps } from '../types/reviews';
 import ReviewSessionCard from './reviewSessionCard';
 import { BookOpen } from 'lucide-react';
-
-interface ReviewSessionListProps {
-  sessions: ReviewSession[];
-  onSessionsUpdate?: () => void;
-}
 
 const ReviewSessionList: React.FC<ReviewSessionListProps> = ({ sessions, onSessionsUpdate }) => {
   const groupedSessions = {

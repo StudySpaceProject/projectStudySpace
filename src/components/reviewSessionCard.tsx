@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ReviewSession } from '../types/reviews';
+import { ReviewSession, ReviewSessionCardProps } from '../types/reviews';
 import { Calendar, Clock, BookOpen, Edit, Info } from 'lucide-react';
 import { useReviews } from '../../hooks/useReviews';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
-interface ReviewSessionCardProps {
-  session: ReviewSession;
-  onSessionUpdated?: () => void;
-}
 
 const ReviewSessionCard: React.FC<ReviewSessionCardProps> = ({ session, onSessionUpdated }) => {
   const { rescheduleReview } = useReviews();

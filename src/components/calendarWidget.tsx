@@ -1,10 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCalendarSessions } from '../../hooks/useCalendarSessions';
-
-interface CalendarWidgetProps {
-  className?: string;
-}
+import { CalendarWidgetProps } from '../types/calendarWidget'
 
 const CalendarWidget: React.FC<CalendarWidgetProps> = ({ className = '' }) => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());

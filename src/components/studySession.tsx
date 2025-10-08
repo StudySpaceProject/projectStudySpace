@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
-import { ScheduledReview } from '../types/reviews'
+import { ScheduledReview, StudySessionProps } from '../types/reviews'
 import DifficultySelector from './difficultySelector';
 import { X, Clock, BookOpen, Eye } from 'lucide-react';
-
-interface StudySessionProps {
-  review: ScheduledReview;
-  currentCard: number;
-  totalCards: number;
-  onComplete: (difficulty: 1 | 2 | 3) => void;
-  onExit: () => void;
-}
 
 const StudySession: React.FC<StudySessionProps> = ({
   review,
