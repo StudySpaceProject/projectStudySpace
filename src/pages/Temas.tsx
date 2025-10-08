@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { TopicsManager } from "../components/topicsManager";
 import { CardsManager } from "../components/cardsManager";
 import { Topic } from "../types/topics";
+import { useProgress } from "../../hooks/useProgress";
 
 const Dashboard = () => {
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
@@ -11,6 +12,9 @@ const Dashboard = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
 
   const { getDashboard } = useAuth();
+
+  const { progress, completedToday, scheduledForToday, loading } = 
+    useProgress(dashboardData?.dashboard?.stats);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -30,9 +34,9 @@ const Dashboard = () => {
               <BookOpen size={24} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-gray-600 text-sm mb-1">Temas Activos</p>
+              <p className="text-gray-600 text-sm mb-1">Temas activos</p>
               <p className="text-3xl font-bold text-gray-900">
-                {dashboardData?.stats?.totalTopics}
+                {dashboardData?.dashboard?.stats?.totalTopics}
               </p>
             </div>
           </div>
@@ -43,9 +47,9 @@ const Dashboard = () => {
               <FileText size={24} className="text-green-600" />
             </div>
             <div>
-              <p className="text-gray-600 text-sm mb-1">Tarjetas Total</p>
+              <p className="text-gray-600 text-sm mb-1">Tarjetas total</p>
               <p className="text-3xl font-bold text-gray-900">
-                {dashboardData?.stats?.totalCards}
+                {dashboardData?.dashboard?.stats?.totalCards}
               </p>
             </div>
           </div>
@@ -56,9 +60,9 @@ const Dashboard = () => {
               <Clock size={24} className="text-purple-600" />
             </div>
             <div>
-              <p className="text-gray-600 text-sm mb-1">Racha Actual</p>
+              <p className="text-gray-600 text-sm mb-1">Racha actual</p>
               <p className="text-3xl font-bold text-gray-900">
-                {dashboardData?.stats?.currentStreak || 0} días
+                {dashboardData?.dashboard?.stats?.currentStreak || 0} días
               </p>
             </div>
           </div>
@@ -69,8 +73,13 @@ const Dashboard = () => {
               <TrendingUp size={24} className="text-orange-600" />
             </div>
             <div>
-              <p className="text-gray-600 text-sm mb-1">Progreso Promedio</p>
-              <p className="text-3xl font-bold text-gray-900">{0}%</p>
+              <p className="text-gray-600 text-sm mb-1">Progreso promedio</p>
+              <p className="text-3xl font-bold text-gray-900">
+                {loading ? '...' : `${progress}%`}
+              </p>
+              <p className="text-xs text-gray-500">
+                {loading ? '...' : `${completedToday}/${scheduledForToday} tarjetas`}
+              </p>
             </div>
           </div>
         </div>
