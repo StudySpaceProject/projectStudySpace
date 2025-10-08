@@ -67,3 +67,21 @@ export interface StudySessionCalendar {
   };
   intervalDays?: number;
 }
+
+export interface StudySessionProps {
+  review: ScheduledReview;
+  currentCard: number;
+  totalCards: number;
+  onComplete: (difficulty: 1 | 2 | 3) => void;
+  onExit: () => void;
+}
+
+export interface ReviewSessionListProps {
+  sessions: ReviewSession[];
+  onSessionsUpdate?: () => void;
+}
+
+export interface ReviewSessionCardProps {
+  session: ReviewSession;
+  onSessionUpdated?: () => void;
+}
