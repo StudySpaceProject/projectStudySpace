@@ -39,7 +39,7 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
       setDebouncedTerm("");
       setCurrentPage(1);
       setIsSearching(false);
-      loadCards(1).catch((error) =>
+      fetchCardsByTopic(topicId).catch((error) =>
         console.error("Error fetching cards:", error)
       );
     }
