@@ -28,7 +28,7 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
     if (isSearching) {
       await searchCards(debouncedTerm, page);
     } else {
-      await fetchCardsByTopic(topicId);
+      await fetchCardsByTopic(topicId, page);
     }
   };
 
