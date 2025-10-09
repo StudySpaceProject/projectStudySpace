@@ -37,9 +37,11 @@ export interface UpcomingReviews {
   [date: string]: UpcomingReviewItem[];
 }
 
+export type UpcomingReviewsArray = UpcomingReviewItem[];
+
 export interface ReviewSession {
   id: number;
-  type: 'pending' | 'upcoming' | 'completed';
+  type: "pending" | "upcoming" | "completed";
   dueDate: string;
   card: StudyCard;
   difficultyRating?: 1 | 2 | 3;
@@ -79,6 +81,13 @@ export interface StudySessionProps {
 export interface ReviewSessionListProps {
   sessions: ReviewSession[];
   onSessionsUpdate?: () => void;
+  upcomingPagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize: number;
+  };
+  onUpcomingPageChange?: (page: number) => void;
 }
 
 export interface ReviewSessionCardProps {

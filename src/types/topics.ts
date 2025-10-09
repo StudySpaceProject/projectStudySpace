@@ -33,6 +33,13 @@ export interface TopicListProps {
   onEdit: (topic: Topic) => void;
   onDelete: (topicId: number) => void;
   onViewCards?: (topicId: number) => void;  // para navegar a las tarjetas del tema
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize: number;
+  };
+  onPageChange?: (page: number) => void;
 }
 
 export interface TopicsManagerProps {

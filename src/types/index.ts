@@ -9,7 +9,7 @@ export interface StudyTheme {
   name: string;
   description: string;
   category: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: "easy" | "medium" | "hard";
 }
 
 export interface Flashcard {
