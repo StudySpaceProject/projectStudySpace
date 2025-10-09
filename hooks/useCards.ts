@@ -25,28 +25,37 @@ export const useCards = () => {
     return token;
   };
 
-  const fetchCardsByTopic = async (topicId: number, page: number = 1, limit: number = 10): Promise<Card[]> => {
+  const fetchCardsByTopic = async (
+    topicId: number,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<Card[]> => {
     if (!user) throw new Error("Usuario no autenticado");
 
     setLoading(true);
     setError(null);
     try {
       const token = getToken();
-      const response = await fetch(`${API_BASE_URL}/cards/topic/${topicId}?page=${page}&limit=${limit}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/cards/topic/${topicId}?page=${page}&limit=${limit}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!response.ok) throw new Error("Error al obtener tarjetas");
 
       const data = await response.json();
       const cardsArray: Card[] = data.cards || [];
       setCards(cardsArray);
+      const pag = data.pagination || {};
       setPagination({
-        currentPage: data.page || page,
-        totalPages: Math.ceil((data.total || 0) / (data.limit || limit)),
-        totalItems: data.total || 0,
-        pageSize: data.limit || limit,
+        currentPage: pag.page || page,
+        totalPages:
+          pag.totalPages || Math.ceil((pag.total || 0) / (pag.limit || limit)),
+        totalItems: pag.total || 0,
+        pageSize: pag.limit || limit,
       });
       return data;
     } catch (err) {
@@ -58,7 +67,11 @@ export const useCards = () => {
     }
   };
 
-  const searchCards = async (searchTerm: string, page: number = 1, limit: number = 10): Promise<Card[]> => {
+  const searchCards = async (
+    searchTerm: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<Card[]> => {
     if (!user) throw new Error("Usuario no autenticado");
 
     setLoading(true);
@@ -80,11 +93,13 @@ export const useCards = () => {
       const data = await response.json();
       const cardsArray: Card[] = data.cards || [];
       setCards(cardsArray);
+      const pag = data.pagination || {};
       setPagination({
-        currentPage: data.page || page,
-        totalPages: Math.ceil((data.total || 0) / (data.limit || limit)),
-        totalItems: data.total || 0,
-        pageSize: data.limit || limit,
+        currentPage: pag.page || page,
+        totalPages:
+          pag.totalPages || Math.ceil((pag.total || 0) / (pag.limit || limit)),
+        totalItems: pag.total || 0,
+        pageSize: pag.limit || limit,
       });
       return cardsArray;
     } catch (err) {

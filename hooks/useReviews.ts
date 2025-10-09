@@ -1,19 +1,27 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
+import { useState, useEffect, useCallback, useMemo } from "react";
+import {
   ScheduledReview,
   UpcomingReviews,
   ReviewSession,
-  UpcomingReviewItem
-} from '../src/types/reviews';
+  UpcomingReviewItem,
+} from "../src/types/reviews";
 import { API_URL } from "../src/config";
-import { reviewsUpdateEvent } from './reviewsUpdateEvent';
+import { reviewsUpdateEvent } from "./reviewsUpdateEvent";
 
 const API_BASE = API_URL || "http://localhost:3000/api";
 
 export const useReviews = () => {
   const [pendingReviews, setPendingReviews] = useState<ScheduledReview[]>([]);
   const [upcomingReviews, setUpcomingReviews] = useState<UpcomingReviews>({});
-  const [allUpcomingReviews, setAllUpcomingReviews] = useState<UpcomingReviews>({});
+  const [allUpcomingReviews, setAllUpcomingReviews] = useState<UpcomingReviews>(
+    {}
+  );
+  const [upcomingPagination, setUpcomingPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    pageSize: 10,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +35,9 @@ export const useReviews = () => {
         fetchAllUpcomingReviews(),
       ]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error de carga de revisiones');
+      setError(
+        err instanceof Error ? err.message : "Error de carga de revisiones"
+      );
     } finally {
       setLoading(false);
     }
@@ -35,14 +45,14 @@ export const useReviews = () => {
 
   const fetchPendingReviews = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE}/reviews/pending`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-      if (!response.ok) throw new Error('Error de carga de revisiones de hoy');
+      if (!response.ok) throw new Error("Error de carga de revisiones de hoy");
       const data = await response.json();
       setPendingReviews(data.pendingReviews || []);
     } catch (err) {
@@ -51,18 +61,34 @@ export const useReviews = () => {
     }
   };
 
-  const fetchUpcomingReviews = async (days: number = 7) => {
+  const fetchUpcomingReviews = async (
+    days: number = 7,
+    page: number = 1,
+    limit: number = 10
+  ) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/reviews/upcoming?days=${days}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${API_BASE}/reviews/upcoming?days=${days}&page=${page}&limit=${limit}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
-      if (!response.ok) throw new Error('Error de carga de revisiones de los próximos días');
+      );
+      if (!response.ok)
+        throw new Error("Error de carga de revisiones de los próximos días");
       const data = await response.json();
       setUpcomingReviews(data.upcomingReviews || {});
+      const pag = data.pagination || {};
+      setUpcomingPagination({
+        currentPage: pag.page || page,
+        totalPages:
+          pag.totalPages || Math.ceil((pag.total || 0) / (pag.limit || limit)),
+        totalItems: pag.total || 0,
+        pageSize: pag.limit || limit,
+      });
     } catch (err) {
       setUpcomingReviews({});
       throw err;
@@ -71,14 +97,15 @@ export const useReviews = () => {
 
   const fetchAllUpcomingReviews = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE}/reviews/upcoming?days=30`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-      if (!response.ok) throw new Error('Error de carga de todas las revisiones futuras');
+      if (!response.ok)
+        throw new Error("Error de carga de todas las revisiones futuras");
       const data = await response.json();
       setAllUpcomingReviews(data.upcomingReviews || {});
     } catch (err) {
@@ -87,14 +114,17 @@ export const useReviews = () => {
     }
   };
 
-  const completeReview = async (scheduledReviewId: number, difficultyRating: 1 | 2 | 3) => {
+  const completeReview = async (
+    scheduledReviewId: number,
+    difficultyRating: 1 | 2 | 3
+  ) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE}/reviews/complete`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           scheduledReviewId,
@@ -102,34 +132,39 @@ export const useReviews = () => {
         }),
       });
 
-      if (!response.ok) throw new Error('Error al completar la revisión');
+      if (!response.ok) throw new Error("Error al completar la revisión");
 
       const result = await response.json();
-      
+
       await fetchAllReviews();
-      
+
       // Evento global de reviewsUpdateEvent - unión de hooks
       // para sincronización del widget del calendario (sin refresh)
       reviewsUpdateEvent.notify();
-      
+
       return result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al completar la revisión');
+      setError(
+        err instanceof Error ? err.message : "Error al completar la revisión"
+      );
       throw err;
     }
   };
 
   const rescheduleReview = async (reviewId: number, newDate: string) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/reviews/reschedule/${reviewId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ newDate }),
-      });
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${API_BASE}/reviews/reschedule/${reviewId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ newDate }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -137,16 +172,18 @@ export const useReviews = () => {
       }
 
       const result = await response.json();
-      
+
       await fetchAllReviews();
-      
+
       // Evento global de reviewsUpdateEvent - unión de hooks
       // para sincronización del widget del calendario (sin refresh)
       reviewsUpdateEvent.notify();
-      
+
       return result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error reprogramando la revisión');
+      setError(
+        err instanceof Error ? err.message : "Error reprogramando la revisión"
+      );
       throw err;
     }
   };
@@ -155,45 +192,47 @@ export const useReviews = () => {
     const sessions: ReviewSession[] = [];
 
     if (Array.isArray(pendingReviews)) {
-      pendingReviews.forEach(review => {
+      pendingReviews.forEach((review) => {
         sessions.push({
           id: review.id,
-          type: 'pending',
+          type: "pending",
           dueDate: review.dueDate,
           card: review.card,
-          intervalDays: review.intervalDays
+          intervalDays: review.intervalDays,
         });
       });
     }
 
-    if (allUpcomingReviews && typeof allUpcomingReviews === 'object') {
-      Object.values(allUpcomingReviews).forEach(dateGroup => {
+    if (upcomingReviews && typeof upcomingReviews === "object") {
+      Object.values(upcomingReviews).forEach((dateGroup) => {
         if (Array.isArray(dateGroup)) {
           dateGroup.forEach((review: UpcomingReviewItem) => {
             sessions.push({
               id: review.id,
-              type: 'upcoming',
+              type: "upcoming",
               dueDate: review.dueDate,
               card: review.card,
-              intervalDays: review.intervalDays
+              intervalDays: review.intervalDays,
             });
           });
         }
       });
     }
 
-    return sessions.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    return sessions.sort(
+      (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+    );
   };
 
   const upcoming7DaysCount = useMemo(() => {
-    if (!upcomingReviews || typeof upcomingReviews !== 'object') return 0;
+    if (!upcomingReviews || typeof upcomingReviews !== "object") return 0;
     return Object.values(upcomingReviews).reduce((total, dateGroup) => {
       return total + (Array.isArray(dateGroup) ? dateGroup.length : 0);
     }, 0);
   }, [upcomingReviews]);
 
   const totalUpcomingCount = useMemo(() => {
-    if (!allUpcomingReviews || typeof allUpcomingReviews !== 'object') return 0;
+    if (!allUpcomingReviews || typeof allUpcomingReviews !== "object") return 0;
     return Object.values(allUpcomingReviews).reduce((total, dateGroup) => {
       return total + (Array.isArray(dateGroup) ? dateGroup.length : 0);
     }, 0);
@@ -207,6 +246,7 @@ export const useReviews = () => {
     pendingReviews,
     upcomingReviews,
     allUpcomingReviews,
+    upcomingPagination,
     upcoming7DaysCount,
     totalUpcomingCount,
     loading,
