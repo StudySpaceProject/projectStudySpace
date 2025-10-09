@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { TopicsManager } from "../components/topicsManager";
 import { CardsManager } from "../components/cardsManager";
 import { Topic } from "../types/topics";
+import { useStreak } from "../../hooks/useStreaks";
 
 const Dashboard = () => {
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
@@ -11,6 +12,7 @@ const Dashboard = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
 
   const { getDashboard } = useAuth();
+  const { streakData, loading: streakLoading, refetchStreak } = useStreak();
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -19,6 +21,23 @@ const Dashboard = () => {
     };
     fetchDashboard();
   }, []);
+
+  //funcion para calcular el progreso promedio
+  const calculateProgress = () => {
+    if (!dashboardData?.stats) return 0;
+
+    const { totalCards, completedToday } = dashboardData.stats;
+
+    if (totalCards === 0) return 0;
+
+    //progreso basado en tarjetas completadas hoy vs pendientes
+
+    const pendingReviews = dashboardData.stats.pendingReviews || 0;
+    const totalReviews = completedToday + pendingReviews;
+    if (totalReviews === 0) return 100;
+
+    return Math.round((completedToday / totalReviews) * 100);
+  };
 
   return (
     <div>
@@ -58,7 +77,7 @@ const Dashboard = () => {
             <div>
               <p className="text-gray-600 text-sm mb-1">Racha Actual</p>
               <p className="text-3xl font-bold text-gray-900">
-                {dashboardData?.stats?.currentStreak || 0} días
+                {streakData?.currentStreak || 0} días
               </p>
             </div>
           </div>
@@ -70,7 +89,9 @@ const Dashboard = () => {
             </div>
             <div>
               <p className="text-gray-600 text-sm mb-1">Progreso Promedio</p>
-              <p className="text-3xl font-bold text-gray-900">{0}%</p>
+              <p className="text-3xl font-bold text-gray-900">
+                {calculateProgress()}%
+              </p>
             </div>
           </div>
         </div>
