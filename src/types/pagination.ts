@@ -1,3 +1,4 @@
+//types/pagination.ts
 export interface PaginationInfo {
   currentPage: number;
   totalPages: number;
