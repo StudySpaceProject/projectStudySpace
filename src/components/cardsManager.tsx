@@ -9,12 +9,25 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
   const [editingCard, setEditingCard] = useState<Card | undefined>();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState('');
-  const { cards, loading, error, fetchCardsByTopic, searchCards, addCard, updateCard, deleteCard, clearCards } = useCards();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isSearching, setIsSearching] = useState(false);
+  const { cards, loading, error, pagination, fetchCardsByTopic, searchCards, addCard, updateCard, deleteCard, clearCards } = useCards();
+
+  const loadCards = async (page: number) => {
+    if (isSearching) {
+      await searchCards(debouncedTerm, page);
+    } else {
+      await fetchCardsByTopic(topicId, page);
+    }
+  };
 
   useEffect(() => {
     if (topicId) {
       setSearchTerm('');
-      fetchCardsByTopic(topicId).catch(error => console.error('Error fetching cards:', error));
+      setDebouncedTerm('');
+      setCurrentPage(1);
+      setIsSearching(false);
+      loadCards(1).catch(error => console.error('Error fetching cards:', error));
     }
   }, [topicId]);
 
@@ -26,28 +39,24 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
   }, [searchTerm]);
 
   useEffect(() => {
-    const performSearch = async () => {
-      const trimmedTerm = debouncedTerm.trim();
+    const trimmedTerm = debouncedTerm.trim();
+    setIsSearching(trimmedTerm !== '');
+    setCurrentPage(1);
+    if (topicId) {
       if (trimmedTerm === '') {
-        try {
-          await fetchCardsByTopic(topicId);
-        } catch (error) {
-          console.error('Error fetching cards:', error);
-        }
+        loadCards(1).catch(error => console.error('Error fetching cards:', error));
       } else if (trimmedTerm.length >= 2) {
-        try {
-          await searchCards(trimmedTerm);
-        } catch (error) {
-          console.error('Error searching cards:', error);
-        }
+        loadCards(1).catch(error => console.error('Error searching cards:', error));
       } else {
         clearCards();
       }
-    };
-    if (topicId) {
-      performSearch();
     }
   }, [debouncedTerm, topicId]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    loadCards(page).catch(error => console.error('Error loading cards:', error));
+  };
 
   const handleCreateCard = () => {
     setEditingCard(undefined);
@@ -122,6 +131,8 @@ export const CardsManager: React.FC<CardsManagerProps> = ({ topicId }) => {
           onEdit={handleEditCard}
           onDelete={handleDeleteCard}
           topicId={topicId}
+          pagination={pagination}
+          onPageChange={handlePageChange}
         />
       )}
     </div>

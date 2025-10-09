@@ -9,6 +9,12 @@ export const useCards = () => {
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    pageSize: 10,
+  });
   const { user } = useAuth();
 
   //funcion para obtener token
@@ -19,14 +25,14 @@ export const useCards = () => {
     return token;
   };
 
-  const fetchCardsByTopic = async (topicId: number): Promise<Card[]> => {
+  const fetchCardsByTopic = async (topicId: number, page: number = 1, limit: number = 10): Promise<Card[]> => {
     if (!user) throw new Error("Usuario no autenticado");
 
     setLoading(true);
     setError(null);
     try {
       const token = getToken();
-      const response = await fetch(`${API_BASE_URL}/cards/topic/${topicId}`, {
+      const response = await fetch(`${API_BASE_URL}/cards/topic/${topicId}?page=${page}&limit=${limit}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,6 +42,12 @@ export const useCards = () => {
       const data = await response.json();
       const cardsArray: Card[] = data.cards || [];
       setCards(cardsArray);
+      setPagination({
+        currentPage: data.page || page,
+        totalPages: Math.ceil((data.total || 0) / (data.limit || limit)),
+        totalItems: data.total || 0,
+        pageSize: data.limit || limit,
+      });
       return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -46,7 +58,7 @@ export const useCards = () => {
     }
   };
 
-  const searchCards = async (searchTerm: string): Promise<Card[]> => {
+  const searchCards = async (searchTerm: string, page: number = 1, limit: number = 10): Promise<Card[]> => {
     if (!user) throw new Error("Usuario no autenticado");
 
     setLoading(true);
@@ -56,7 +68,7 @@ export const useCards = () => {
       const response = await fetch(
         `${API_BASE_URL}/cards/search?search=${encodeURIComponent(
           searchTerm
-        )}`,
+        )}&page=${page}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -68,6 +80,12 @@ export const useCards = () => {
       const data = await response.json();
       const cardsArray: Card[] = data.cards || [];
       setCards(cardsArray);
+      setPagination({
+        currentPage: data.page || page,
+        totalPages: Math.ceil((data.total || 0) / (data.limit || limit)),
+        totalItems: data.total || 0,
+        pageSize: data.limit || limit,
+      });
       return cardsArray;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -170,6 +188,7 @@ export const useCards = () => {
     cards,
     loading,
     error,
+    pagination,
     fetchCardsByTopic,
     searchCards,
     addCard,

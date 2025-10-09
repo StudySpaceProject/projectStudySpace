@@ -10,6 +10,12 @@ export const useTopics = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    pageSize: 10,
+  });
   const { user } = useAuth();
 
   const getToken = () => {
@@ -19,14 +25,14 @@ export const useTopics = () => {
     return token;
   };
 
-  const fetchUserTopics = async (): Promise<Topic[]> => {
+  const fetchUserTopics = async (page: number = 1, limit: number = 10): Promise<Topic[]> => {
     if (!user) throw new Error("Usuario no autenticado");
 
     setLoading(true);
     setError(null);
     try {
       const token = getToken();
-      const response = await fetch(`${API_BASE_URL}/topics`, {
+      const response = await fetch(`${API_BASE_URL}/topics?page=${page}&limit=${limit}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -37,6 +43,12 @@ export const useTopics = () => {
 
       const data = await response.json();
       setTopics(data.topics || []);
+      setPagination({
+        currentPage: data.page || page,
+        totalPages: Math.ceil((data.total || 0) / (data.limit || limit)),
+        totalItems: data.total || 0,
+        pageSize: data.limit || limit,
+      });
       return data.topics || [];
     } catch (err: any) {
       setError(err.message || "Error desconocido");
@@ -170,6 +182,7 @@ export const useTopics = () => {
     topics,
     loading,
     error,
+    pagination,
     fetchUserTopics,
     addTopic,
     updateTopic,

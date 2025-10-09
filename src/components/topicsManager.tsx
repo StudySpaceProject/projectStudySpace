@@ -15,11 +15,14 @@ export const TopicsManager: React.FC<TopicsManagerProps> = ({
   const [activeFilter, setActiveFilter] = useState<
     "all" | "easy" | "medium" | "hard"
   >("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const {
     topics,
     loading,
     error,
+    pagination,
     fetchUserTopics,
     addTopic,
     updateTopic,
@@ -178,6 +181,11 @@ return (
         onEdit={handleEditTopic}
         onDelete={handleDeleteTopic}
         onViewCards={onSelectTopic ? handleViewCards : undefined}
+        pagination={pagination}
+        onPageChange={(page: number) => {
+          setCurrentPage(page);
+          fetchUserTopics(page, pageSize).catch(error => console.error('Error fetching topics:', error));
+        }}
       />
     )}
   </div>

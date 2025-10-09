@@ -25,6 +25,13 @@ export interface CardListProps {
   onEdit: (card: Card) => void;
   onDelete: (cardId: number) => void;
   topicId: number;
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize: number;
+  };
+  onPageChange?: (page: number) => void;
 }
 
 export interface CardsManagerProps {
