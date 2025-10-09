@@ -5,7 +5,6 @@ import {
   BookOpen,
   Calendar,
   TrendingUp,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -56,7 +55,6 @@ const Layout = () => {
     { to: "/study-sessions", icon: GraduationCap, label: "Sesiones de repaso" },
     { to: "/calendar", icon: Calendar, label: "Calendario" },
     { to: "/progress", icon: TrendingUp, label: "Progreso" },
-    { to: "/settings", icon: Settings, label: "Configuración" },
   ];
 
   return (

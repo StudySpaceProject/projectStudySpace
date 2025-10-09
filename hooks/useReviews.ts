@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   ScheduledReview,
   UpcomingReviews,
+  UpcomingReviewsArray,
   ReviewSession,
   UpcomingReviewItem,
 } from "../src/types/reviews";
@@ -12,7 +13,9 @@ const API_BASE = API_URL || "http://localhost:3000/api";
 
 export const useReviews = () => {
   const [pendingReviews, setPendingReviews] = useState<ScheduledReview[]>([]);
-  const [upcomingReviews, setUpcomingReviews] = useState<UpcomingReviews>({});
+  const [upcomingReviews, setUpcomingReviews] = useState<UpcomingReviewsArray>(
+    []
+  );
   const [allUpcomingReviews, setAllUpcomingReviews] = useState<UpcomingReviews>(
     {}
   );
@@ -80,7 +83,7 @@ export const useReviews = () => {
       if (!response.ok)
         throw new Error("Error de carga de revisiones de los próximos días");
       const data = await response.json();
-      setUpcomingReviews(data.upcomingReviews || {});
+      setUpcomingReviews(data.upcomingReviews || []);
       const pag = data.pagination || {};
       setUpcomingPagination({
         currentPage: pag.page || page,
@@ -90,7 +93,7 @@ export const useReviews = () => {
         pageSize: pag.limit || limit,
       });
     } catch (err) {
-      setUpcomingReviews({});
+      setUpcomingReviews([]);
       throw err;
     }
   };
@@ -203,19 +206,15 @@ export const useReviews = () => {
       });
     }
 
-    if (upcomingReviews && typeof upcomingReviews === "object") {
-      Object.values(upcomingReviews).forEach((dateGroup) => {
-        if (Array.isArray(dateGroup)) {
-          dateGroup.forEach((review: UpcomingReviewItem) => {
-            sessions.push({
-              id: review.id,
-              type: "upcoming",
-              dueDate: review.dueDate,
-              card: review.card,
-              intervalDays: review.intervalDays,
-            });
-          });
-        }
+    if (Array.isArray(upcomingReviews)) {
+      upcomingReviews.forEach((review: UpcomingReviewItem) => {
+        sessions.push({
+          id: review.id,
+          type: "upcoming",
+          dueDate: review.dueDate,
+          card: review.card,
+          intervalDays: review.intervalDays,
+        });
       });
     }
 
@@ -225,10 +224,7 @@ export const useReviews = () => {
   };
 
   const upcoming7DaysCount = useMemo(() => {
-    if (!upcomingReviews || typeof upcomingReviews !== "object") return 0;
-    return Object.values(upcomingReviews).reduce((total, dateGroup) => {
-      return total + (Array.isArray(dateGroup) ? dateGroup.length : 0);
-    }, 0);
+    return Array.isArray(upcomingReviews) ? upcomingReviews.length : 0;
   }, [upcomingReviews]);
 
   const totalUpcomingCount = useMemo(() => {

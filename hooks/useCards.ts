@@ -25,37 +25,28 @@ export const useCards = () => {
     return token;
   };
 
-  const fetchCardsByTopic = async (
-    topicId: number,
-    page: number = 1,
-    limit: number = 10
-  ): Promise<Card[]> => {
+  const fetchCardsByTopic = async (topicId: number): Promise<Card[]> => {
     if (!user) throw new Error("Usuario no autenticado");
 
     setLoading(true);
     setError(null);
     try {
       const token = getToken();
-      const response = await fetch(
-        `${API_BASE_URL}/cards/topic/${topicId}?page=${page}&limit=${limit}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/cards/topic/${topicId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) throw new Error("Error al obtener tarjetas");
 
       const data = await response.json();
       const cardsArray: Card[] = data.cards || [];
       setCards(cardsArray);
-      const pag = data.pagination || {};
       setPagination({
-        currentPage: pag.page || page,
-        totalPages:
-          pag.totalPages || Math.ceil((pag.total || 0) / (pag.limit || limit)),
-        totalItems: pag.total || 0,
-        pageSize: pag.limit || limit,
+        currentPage: 1,
+        totalPages: 1,
+        totalItems: cardsArray.length,
+        pageSize: cardsArray.length,
       });
       return data;
     } catch (err) {

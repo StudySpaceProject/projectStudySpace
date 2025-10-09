@@ -37,6 +37,8 @@ export interface UpcomingReviews {
   [date: string]: UpcomingReviewItem[];
 }
 
+export type UpcomingReviewsArray = UpcomingReviewItem[];
+
 export interface ReviewSession {
   id: number;
   type: "pending" | "upcoming" | "completed";
