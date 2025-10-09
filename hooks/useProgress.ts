@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import { API_URL } from "../src/config";
 
 const API_BASE = API_URL || "http://localhost:3000/api";
@@ -21,25 +21,22 @@ export const useProgress = () => {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('token');
-      console.log('Fetching progress from:', `${API_BASE}/users/dashboard`);
-      console.log('Token present:', !!token);
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE}/users/dashboard`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-      console.log('Response status:', response.status);
-      if (!response.ok) throw new Error(`Error fetching progress data: ${response.status}`);
+
+      if (!response.ok)
+        throw new Error(`Error fetching progress data: ${response.status}`);
       const data = await response.json();
-      console.log('Response data:', data);
-      console.log('Full response data:', JSON.stringify(data, null, 2));
-      console.log('Data.dashboard.stats:', data.dashboard.stats);
       setProgressData(data.dashboard.stats);
     } catch (err) {
-      console.error('Error in fetchProgress:', err);
-      setError(err instanceof Error ? err.message : 'Error loading progress data');
+      setError(
+        err instanceof Error ? err.message : "Error loading progress data"
+      );
     } finally {
       setLoading(false);
     }

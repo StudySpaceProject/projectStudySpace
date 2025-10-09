@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { BookOpen, FileText, TrendingUp, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
+import { BookOpen, FileText, TrendingUp, Flame } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { TopicsManager } from "../components/topicsManager";
 import { CardsManager } from "../components/cardsManager";
-import { Topic } from "../types/topics";
 import { useStreak } from "../../hooks/useStreaks";
 
 const Dashboard = () => {
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
   const [dashboardData, setDashboardData] = useState<any | null>(null);
-  const [topics, setTopics] = useState<Topic[]>([]);
 
   const { getDashboard } = useAuth();
-  const { streakData, loading: streakLoading, refetchStreak } = useStreak();
+  const { streakData, loading: streakLoading } = useStreak();
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -26,17 +24,26 @@ const Dashboard = () => {
   const calculateProgress = () => {
     if (!dashboardData?.stats) return 0;
 
-    const { totalCards, completedToday } = dashboardData.stats;
+    const pendingToday = streakData?.pendingToday ?? 0;
+    let completedToday = 0;
+    const today = new Date();
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
 
-    if (totalCards === 0) return 0;
+    if (dashboardData.recentActivity) {
+      completedToday = dashboardData.recentActivity.filter((activity: any) => {
+        const completeDate = new Date(activity.completedAt);
+        return completeDate >= startOfToday;
+      }).length;
+    }
+    const totalToday = completedToday + pendingToday;
 
-    //progreso basado en tarjetas completadas hoy vs pendientes
+    if (totalToday === 0) return 100;
 
-    const pendingReviews = dashboardData.stats.pendingReviews || 0;
-    const totalReviews = completedToday + pendingReviews;
-    if (totalReviews === 0) return 100;
-
-    return Math.round((completedToday / totalReviews) * 100);
+    return Math.round((completedToday / totalToday) * 100);
   };
 
   return (
@@ -69,19 +76,35 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        {/* Racha */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-100">
-              <Clock size={24} className="text-purple-600" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-orange-100">
+              <Flame size={24} className="text-orange-600" />
             </div>
-            <div>
+            <div className="flex-1">
               <p className="text-gray-600 text-sm mb-1">Racha Actual</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {streakData?.currentStreak || 0} días
-              </p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-3xl font-bold text-gray-900">
+                  {streakLoading ? "..." : streakData?.currentStreak || 0}
+                </p>
+                <span className="text-sm text-gray-500">días</span>
+              </div>
+              {streakData && streakData.longestStreak > 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Récord: {streakData.longestStreak} días
+                </p>
+              )}
+              {streakData?.wasAutoReset && (
+                <p className="text-xs text-orange-600 mt-1">
+                  Reiniciada por inactividad
+                </p>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Progreso Promedio */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-orange-100">
@@ -100,8 +123,7 @@ const Dashboard = () => {
       {/* Topics Manager */}
       <TopicsManager
         onSelectTopic={setSelectedTopicId}
-        onTopicsChange={(updatedTopics) => setTopics(updatedTopics)}
-        selectedTopicId={selectedTopicId} // ✅ pasar el tema seleccionado
+        selectedTopicId={selectedTopicId}
       />
 
       {/* Cards Manager */}
