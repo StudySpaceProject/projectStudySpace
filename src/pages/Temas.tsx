@@ -77,11 +77,11 @@ const Dashboard = () => {
       </div>
 
       {/* Topics Manager */}
-<TopicsManager
-  onSelectTopic={setSelectedTopicId}
-  onTopicsChange={(updatedTopics) => setTopics(updatedTopics)}
-  selectedTopicId={selectedTopicId} // ✅ pasar el tema seleccionado
-/>
+      <TopicsManager
+        onSelectTopic={setSelectedTopicId}
+        onTopicsChange={(updatedTopics) => setTopics(updatedTopics)}
+        selectedTopicId={selectedTopicId} // ✅ pasar el tema seleccionado
+      />
 
       {/* Cards Manager */}
       {selectedTopicId && (
