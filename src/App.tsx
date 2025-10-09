@@ -14,6 +14,7 @@ import Temas from "./pages/Temas";
 import Register from "./pages/Register";
 import StudySessions from "./pages/StudySessions";
 import CalendarPage from "./pages/CalendarPage";
+import ProgressPage from "./pages/ProgressPage";
 import Layout from "./components/layout";
 
 const theme = createTheme({
@@ -50,8 +51,9 @@ const AppRoutes: React.FC = () => {
       {isAuthenticated && (
         <Route element={<Layout />}>
           <Route path="/topics" element={<Temas />} />
-          <Route path="/study-sessions" element={<StudySessions />} />  
+          <Route path="/study-sessions" element={<StudySessions />} />
           <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/progress" element={<ProgressPage />} />
         </Route>
       )}
 

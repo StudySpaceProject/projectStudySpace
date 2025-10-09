@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useReviews } from '../../hooks/useReviews';
 import ReviewSessionList from './reviewSessionList';
 import StudySession from './studySession';
+import ProgressSection from './progressSection';
 import { BookOpen, Clock, TrendingUp, Play } from 'lucide-react';
 
 const SpacedRepetitionDashboard: React.FC = () => {
@@ -158,8 +159,10 @@ const SpacedRepetitionDashboard: React.FC = () => {
         </div>
       </div>
 
-      <ReviewSessionList 
-        sessions={groupedSessions} 
+      <ProgressSection />
+
+      <ReviewSessionList
+        sessions={groupedSessions}
         onSessionsUpdate={handleSessionsUpdate}
       />
     </div>
